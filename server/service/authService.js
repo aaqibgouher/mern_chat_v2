@@ -34,6 +34,9 @@ const register = async (params) => {
   await addUserToken({ userId, token });
   //   login
 
+  await login(email, password);
+
+
   return { userId, token };
 };
 
@@ -46,6 +49,12 @@ const addUserToken = async (params) => {
   await userTokenData.save();
 };
 
+const login = async (email, password) => {
+  const user = await userService.getUser("email", email);
+  const verifyPassword = user ? decodePassword(password, user.password) : Constants.USER_NOT_FOUND;
+
+
+};
 // export
 module.exports = {
   register,
