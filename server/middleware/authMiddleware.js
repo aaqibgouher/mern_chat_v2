@@ -1,6 +1,7 @@
 const Output = require("../utils/Output");
 const JWTLibrary = require("../utils/JWTLibrary");
 const userService = require("../service/userService");
+const authService = require("../service/authService");
 
 // Authentication middleware
 const isAuthenticate = async (req, res, next) => {
@@ -8,22 +9,31 @@ const isAuthenticate = async (req, res, next) => {
     // taking token
     const token = req.headers.authorization?.split(" ")[1];
 
-    // // if not present, show err
+    // if not present, show err
     if (!token) throw "Please login to continue";
 
-    // // decoding token
+    // decoding token
     const decoded = await JWTLibrary.decodeToken(token);
 
     if (!decoded) throw "Invalid token";
 
-    // // if decoded, data is present, check user present with id or not
+    // if decoded, data is present, check user present with id or not
     let user = await userService.getUser("_id", decoded.userId);
 
     if (!user)
       throw "User does not exists, Some issue with JWT, Please login once again";
 
+    // if user is true, then check for token exis
+    const userToken = await authService.getUserTokenByIdAndToken(
+      user._id,
+      token
+    );
+
+    if (!userToken) throw "User exists, please check your token";
+
     // if everyting correct, setting company detail to request, allowing them as an authorized user
     req.user = user;
+    req.user.token = token;
 
     next();
   } catch (e) {

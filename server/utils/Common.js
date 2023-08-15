@@ -23,6 +23,20 @@ const decodePassword = async (password, userPassword) => {
   return await bcrypt.compare(password, userPassword);
 };
 
+const getEmailSubject = async () => {
+  return `Welcome to Chatiyaoo!`;
+};
+
+const getEmailContent = async (code) => {
+  if (!code) throw "Code is required while register user";
+
+  return `
+        <h1>Welcome to Our Team!</h1>
+        <p>We are extremely happy to have you in our team!</p>
+        <p>Below is the code for Email Verification: <strong>${code}</strong></p>
+    `;
+};
+
 const sendEmail = async (to, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -62,4 +76,6 @@ module.exports = {
   decodePassword,
   sendEmail,
   generateOTP,
+  getEmailSubject,
+  getEmailContent,
 };
