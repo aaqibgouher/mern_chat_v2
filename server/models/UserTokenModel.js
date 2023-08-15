@@ -10,7 +10,7 @@ const userTokenSchema = new mongoose.Schema(
     },
     token: {
       type: String,
-      default: "",
+      required: true,
     },
   },
   { timestamps: true }
