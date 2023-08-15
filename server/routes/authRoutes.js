@@ -6,6 +6,9 @@ const authMiddleware = require("../middleware/authMiddleware");
 // register
 router.post("/register", authController.register);
 
+// email verfication
+router.post("/verify-email", authController.emailVerify);
+
 // login
 router.post("/login", authController.login);
 

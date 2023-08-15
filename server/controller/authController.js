@@ -27,6 +27,24 @@ const register = async (req, res) => {
   }
 };
 
+// verifiy email
+const emailVerify = async (req, res) => {
+  try {
+    const { userId, code } = req.body;
+    // calling email verify service
+    let data = await authService.emailVerfiy({ userId, code });
+
+    return await Output.success(
+      res,
+      `Email Successfully verified`,
+      data
+    );
+  } catch (e) {
+    console.log(e, "from emailVerify method controller");
+    return await Output.error(res, e);
+  }
+};
+
 // login
 const login = async (req, res) => {
   const session = await Transaction.start();
@@ -69,4 +87,5 @@ module.exports = {
   register,
   login,
   logout,
+  emailVerify,
 };

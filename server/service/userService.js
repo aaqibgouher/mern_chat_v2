@@ -17,6 +17,7 @@ const getUser = async (column = "_id", value = "", includePassword = false) => {
   return await userQuery.exec();
 };
 
+
 // add user
 const addUser = async (params) => {
   const hashed = await Common.hashPassword(params.password);
@@ -37,8 +38,15 @@ const addUser = async (params) => {
   return savedUser._id;
 };
 
+const getUsers = async () => {
+  return await UserModel.find().select('-password');
+};
+
+
+
 // export
 module.exports = {
   getUser,
   addUser,
+  getUsers,
 };

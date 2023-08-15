@@ -8,4 +8,8 @@ module.exports = {
   USER_NOT_FOUND: "User not found",
   INVALID_PASSWORD: "Invalid password",
   EMAIL_VERIFICATION_REQUIRED: "Email verification is required",
+  USER_ID_IS_REQUIRED: 'userId is required',
+  EMIAL_CODE_IS_REQUIRED: 'Email code is required',
+  INVAILD_CODE: 'Invalid code',
+  EMAIL_IS_ALREADY_VERIFIED: 'Email is already verified'
 };

@@ -1,9 +1,8 @@
-const { default: mongoose } = require("mongoose");
 const Common = require("../utils/Common");
 const Constants = require("../utils/Constants");
 const userService = require("./userService");
 const JWTLibrary = require("../utils/JWTLibrary");
-const { UserTokenModel } = require("../models");
+const { UserTokenModel, UserModel } = require("../models");
 
 // get users
 const register = async (params) => {
@@ -55,6 +54,30 @@ const addUserToken = async (params) => {
   await userTokenData.save();
 };
 
+// Email verification function
+
+const emailVerfiy = async (params) => {
+
+  if (!params || !params.userId || typeof params.userId !== "string")
+    throw Constants.USER_ID_IS_REQUIRED;
+
+  if (!params || !params.code || typeof params.code !== "string")
+    throw Constants.EMIAL_CODE_IS_REQUIRED;
+
+  const user = await userService.getUser("_id", params.userId);
+  if (!user) throw Constants.USER_NOT_FOUND
+
+  if (user.isEmailVerified) throw Constants.EMAIL_IS_ALREADY_VERIFIED;
+
+  if (user.code !== params.code) throw Constants.INVAILD_CODE;
+
+  const updatedUser = await UserModel.updateUser(params.userId, { isEmailVerified: true });
+
+  return updatedUser;
+};
+
+// login user function
+
 const login = async (params = {}) => {
   // validation
   if (!params || !params.email || typeof params.email !== "string")
@@ -82,6 +105,7 @@ const login = async (params = {}) => {
   return { userId: user._id, token };
 };
 
+// logout user function
 const logout = async (user) => {
   //   get user token by user id and token
   const userToken = await getUserTokenByIdAndToken(user._id, user.token);
@@ -99,6 +123,7 @@ const getUserTokenByIdAndToken = async (userId, token) => {
   });
 };
 
+// delete user token while logout
 const deleteUserTokenById = async (tokenId) => {
   const result = await UserTokenModel.deleteOne({ _id: tokenId });
 
@@ -117,4 +142,5 @@ module.exports = {
   logout,
   getUserTokenByIdAndToken,
   deleteUserTokenById,
+  emailVerfiy,
 };
