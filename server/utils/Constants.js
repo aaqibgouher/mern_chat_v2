@@ -6,4 +6,5 @@ module.exports = {
   VALID_PHONE_IS_REQUIRED: "Valid Phone is required",
   USER_ALREADY_EXISTS: "User already exists",
   USER_NOT_FOUND: "User not found",
+  INVALID_PASSWORD: "Invalid password",
 };

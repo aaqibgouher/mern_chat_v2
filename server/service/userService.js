@@ -4,11 +4,17 @@ const Constants = require("../utils/Constants");
 const Common = require("../utils/Common");
 
 // get user by id (default)
-const getUser = async (column = "_id", value = "") => {
+const getUser = async (column = "_id", value = "", includePassword = false) => {
   const query = {};
   query[column] = value;
 
-  return await UserModel.findOne(query);
+  let userQuery = UserModel.findOne(query);
+
+  if (!includePassword) {
+    userQuery = userQuery.select("-password");
+  }
+
+  return await userQuery.exec();
 };
 
 // add user
@@ -20,8 +26,10 @@ const addUser = async (params) => {
     email: params.email,
     password: hashed,
     userName: params.email.split("@")[0],
-    profile: "https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg",
-    about: "Hello I am " + ' ' + params.name,
+    profile:
+      "https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg",
+    about: "Hello I am " + " " + params.name,
+    code: params.code,
   });
 
   const savedUser = await userData.save();
