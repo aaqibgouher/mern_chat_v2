@@ -7,7 +7,7 @@ const app = express();
 require("./database/config");
 
 // models
-const UserModel = require("./models/UserModel");
+const models = require("./models");
 
 // body parser
 app.use(bodyParser.json());
