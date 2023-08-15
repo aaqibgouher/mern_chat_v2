@@ -6,6 +6,9 @@ const app = express();
 // db configuration
 require("./database/config");
 
+// models
+const UserModel = require("./models/UserModel");
+
 // body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
