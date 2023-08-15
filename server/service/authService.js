@@ -27,7 +27,7 @@ const register = async (params) => {
   if (user) throw Constants.USER_ALREADY_EXISTS;
 
   //  add new user
-  const userId = await userService.addUser({ name, email });
+  const userId = await userService.addUser({ name, email, password });
 
   const token = await JWTLibrary.generateToken({ userId });
   // token add
