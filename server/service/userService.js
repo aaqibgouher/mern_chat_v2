@@ -17,7 +17,6 @@ const getUser = async (column = "_id", value = "", includePassword = false) => {
   return await userQuery.exec();
 };
 
-
 // add user
 const addUser = async (params) => {
   const hashed = await Common.hashPassword(params.password);
@@ -38,11 +37,13 @@ const addUser = async (params) => {
   return savedUser._id;
 };
 
-const getUsers = async () => {
-  return await UserModel.find().select('-password');
+const getUsers = async (filter = {}) => {
+  const defaultFilter = { isEmailVerified: true };
+
+  const finalFilter = { ...defaultFilter, ...filter };
+
+  return await UserModel.find(finalFilter).select("-password");
 };
-
-
 
 // export
 module.exports = {
