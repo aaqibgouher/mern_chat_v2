@@ -38,11 +38,11 @@ const register = async (params) => {
     await Common.getEmailContent(code)
   );
 
-  return {
-    userId,
-    isEmailVerified: false,
-    emailRes,
-  };
+  const loginRes = await login({ email, password });
+  loginRes.isEmailVerified = false;
+  loginRes.emailRes = emailRes;
+
+  return loginRes;
 };
 
 const addUserToken = async (params) => {
@@ -57,21 +57,21 @@ const addUserToken = async (params) => {
 // Email verification function
 
 const emailVerfiy = async (params) => {
-
-  if (!params || !params.userId || typeof params.userId !== "string")
-    throw Constants.USER_ID_IS_REQUIRED;
+  if (!params || !params.userId) throw Constants.USER_ID_IS_REQUIRED;
 
   if (!params || !params.code || typeof params.code !== "string")
     throw Constants.EMIAL_CODE_IS_REQUIRED;
 
   const user = await userService.getUser("_id", params.userId);
-  if (!user) throw Constants.USER_NOT_FOUND
+  if (!user) throw Constants.USER_NOT_FOUND;
 
   if (user.isEmailVerified) throw Constants.EMAIL_IS_ALREADY_VERIFIED;
 
   if (user.code !== params.code) throw Constants.INVAILD_CODE;
 
-  const updatedUser = await UserModel.updateUser(params.userId, { isEmailVerified: true });
+  const updatedUser = await UserModel.updateUser(params.userId, {
+    isEmailVerified: true,
+  });
 
   return updatedUser;
 };
