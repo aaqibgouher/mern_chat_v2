@@ -13,6 +13,10 @@ const contactSchema = new mongoose.Schema(
       ref: "UserModel",
       required: true,
     },
+    isGroup: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

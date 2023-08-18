@@ -1,5 +1,10 @@
 const { default: mongoose } = require("mongoose");
-const { UserModel } = require("../models");
+const {
+  UserModel,
+  ContactModel,
+  GroupModel,
+  GroupMemberModel,
+} = require("../models");
 const Constants = require("../utils/Constants");
 const Common = require("../utils/Common");
 
@@ -45,9 +50,33 @@ const getUsers = async (filter = {}) => {
   return await UserModel.find(finalFilter).select("-password");
 };
 
+const getContacts = async (userId, filter = {}) => {
+  return await ContactModel.find({ fromUserId: userId })
+    .populate("fromUserId", "-password")
+    .populate("toUserId", "-password");
+};
+
+const getGroups = async (userId, filter = {}) => {
+  return await GroupMemberModel.find({ addedTo: userId })
+    .populate("addedBy", "-password")
+    .populate("addedTo", "-password")
+    .populate("groupId");
+};
+
+const getConnectedUsers = async (userId, filter = {}) => {
+  const solo = await getContacts(userId);
+  const groups = await getGroups(userId);
+
+  return [...solo, ...groups];
+};
+
 // export
 module.exports = {
   getUser,
   addUser,
   getUsers,
+  getUsers,
+  getConnectedUsers,
+  getContacts,
+  getGroups,
 };

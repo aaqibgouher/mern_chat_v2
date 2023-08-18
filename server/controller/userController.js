@@ -32,7 +32,22 @@ const getSearchUsers = async (req, res) => {
   }
 };
 
+const getConnectedUsers = async (req, res) => {
+  try {
+    // calling service file to get connected users
+    let data = await userService.getConnectedUsers(req.user._id);
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully get connected users.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from get connected users controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getUser,
   getSearchUsers,
+  getConnectedUsers,
 };

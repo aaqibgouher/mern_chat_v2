@@ -10,5 +10,8 @@ router.get("/me", userController.getUser);
 // get users for add user
 router.get("/search", userController.getSearchUsers);
 
+// get added users
+router.get("/connected", userController.getConnectedUsers);
+
 // exported router
 module.exports = router;
