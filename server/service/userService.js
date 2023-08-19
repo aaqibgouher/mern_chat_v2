@@ -115,6 +115,10 @@ const createGroup = async (params = {}) => {
   return savedGroup._id;
 };
 
+const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
+  return await GroupMemberModel.findOne({ groupId, addedTo: userId });
+};
+
 // export
 module.exports = {
   getUser,
@@ -125,4 +129,5 @@ module.exports = {
   getContacts,
   getGroupsForContacts,
   createGroup,
+  getGroupMembersByGroupIdAndUser,
 };

@@ -18,4 +18,8 @@ module.exports = {
   ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID: "Id should be correct mongo object id",
   CREATED_BY_ID_IS_REQUIRED: "Created by id is required",
   GROUP_ALREADY_EXISTS: "Group alreay exists",
+  GROUP_ID_IS_REQUIRED: "Group id is required",
+  USER_DOES_NOT_EXIST_IN_GROUP: "User does not exists in the group",
+  USER_REMOVED_FROM_GROUP: "User is removed from the group",
+  USER_LEFT_GROUP: "User has left the group",
 };
