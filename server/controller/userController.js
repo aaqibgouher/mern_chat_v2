@@ -1,7 +1,7 @@
 const express = require("express");
 const Output = require("../utils/Output");
 const userService = require("../service/userService");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 const getUser = async (req, res) => {
   try {
@@ -22,6 +22,11 @@ const getSearchUsers = async (req, res) => {
   try {
     // calling service file to get search users
     let data = await userService.getUsers();
+
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+
+    // Filter out the logged-in user
+    data = data.filter((user) => !user._id.equals(userId));
 
     // returing success output, message, data
     return await Output.success(res, "Successfully get search users.", data);

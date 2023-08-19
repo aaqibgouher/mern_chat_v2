@@ -51,7 +51,9 @@ const getUsers = async (filter = {}) => {
 };
 
 const getContacts = async (userId, filter = {}) => {
-  return await ContactModel.find({ fromUserId: userId })
+  return await ContactModel.find({
+    $or: [{ fromUserId: userId }, { toUserId: userId }],
+  })
     .populate("fromUserId", "-password")
     .populate("toUserId", "-password");
 };
