@@ -13,5 +13,8 @@ router.get("/search", userController.getSearchUsers);
 // get added users
 router.get("/connected", userController.getConnectedUsers);
 
+// create group
+router.post("/create-group", userController.createGroup);
+
 // exported router
 module.exports = router;

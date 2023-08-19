@@ -58,7 +58,7 @@ const getContacts = async (userId, filter = {}) => {
     .populate("toUserId", "-password");
 };
 
-const getGroups = async (userId, filter = {}) => {
+const getGroupsForContacts = async (userId, filter = {}) => {
   return await GroupMemberModel.find({ addedTo: userId })
     .populate("addedBy", "-password")
     .populate("addedTo", "-password")
@@ -67,9 +67,52 @@ const getGroups = async (userId, filter = {}) => {
 
 const getConnectedUsers = async (userId, filter = {}) => {
   const solo = await getContacts(userId);
-  const groups = await getGroups(userId);
+  const groups = await getGroupsForContacts(userId);
 
   return [...solo, ...groups];
+};
+
+const getGroups = async (column = "_id", value = "") => {
+  const query = {};
+  query[column] = value;
+
+  let userQuery = GroupModel.find(query);
+
+  return await userQuery.exec();
+};
+
+const createGroup = async (params = {}) => {
+  if (!params || !params.name || typeof params.name !== "string")
+    throw Constants.NAME_IS_REQUIRED;
+  if (!params || !params.createdBy) throw Constants.CREATED_BY_ID_IS_REQUIRED;
+  if (!Common.isObjectIdValid(params.createdBy))
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+
+  const { name, createdBy, description, profileURL } = params;
+
+  // check if group already exists by name by same user
+  const groups = await getGroups("createdBy", createdBy);
+
+  for (const groupIndex in groups) {
+    if (groups[groupIndex].name === name) {
+      throw Constants.GROUP_ALREADY_EXISTS;
+      break;
+    }
+  }
+
+  // for logged in user, group is new, we can create new
+  const groupData = new GroupModel({
+    name,
+    createdBy,
+    description,
+    profileURL: "https://cdn-icons-png.flaticon.com/512/25/25437.png",
+    isDeleted: false,
+    isGroup: true,
+  });
+
+  const savedGroup = await groupData.save();
+
+  return savedGroup._id;
 };
 
 // export
@@ -80,5 +123,6 @@ module.exports = {
   getUsers,
   getConnectedUsers,
   getContacts,
-  getGroups,
+  getGroupsForContacts,
+  createGroup,
 };

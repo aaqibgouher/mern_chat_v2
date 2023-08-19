@@ -51,8 +51,30 @@ const getConnectedUsers = async (req, res) => {
   }
 };
 
+const createGroup = async (req, res) => {
+  try {
+    const { name, description, profileURL } = req.body;
+
+    // calling service file to create group
+    let data = await userService.createGroup({
+      name,
+      createdBy: req.user._id,
+      description,
+      profileURL,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully created group.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from create group users controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getUser,
   getSearchUsers,
   getConnectedUsers,
+  createGroup,
 };

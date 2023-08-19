@@ -16,4 +16,6 @@ module.exports = {
   TO_ID_IS_REQUIRED: "To user id is required",
   IS_GROUP_REQUIRED: "Is group required",
   ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID: "Id should be correct mongo object id",
+  CREATED_BY_ID_IS_REQUIRED: "Created by id is required",
+  GROUP_ALREADY_EXISTS: "Group alreay exists",
 };
