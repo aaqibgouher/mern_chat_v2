@@ -27,8 +27,9 @@ const messageSchema = new mongoose.Schema(
       default: false,
     },
     isDeleted: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["ME", "EVERYONE", "NOT_DELETED"],
+      default: "NOT_DELETED",
     },
   },
   { timestamps: true }

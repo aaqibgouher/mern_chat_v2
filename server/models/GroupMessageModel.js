@@ -36,8 +36,9 @@ const groupMessageSchema = new mongoose.Schema(
     },
     seen: [seenSchema],
     isDeleted: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["ME", "EVERYONE", "NOT_DELETED"],
+      default: "NOT_DELETED",
     },
   },
   { timestamps: true }

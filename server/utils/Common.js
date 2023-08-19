@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 
 // email validation
 const isEmail = (email) => {
@@ -70,6 +71,10 @@ const generateOTP = async () => {
   return OTP;
 };
 
+const isObjectIdValid = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
 module.exports = {
   isEmail,
   hashPassword,
@@ -78,4 +83,5 @@ module.exports = {
   generateOTP,
   getEmailSubject,
   getEmailContent,
+  isObjectIdValid,
 };

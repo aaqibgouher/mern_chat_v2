@@ -8,8 +8,12 @@ module.exports = {
   USER_NOT_FOUND: "User not found",
   INVALID_PASSWORD: "Invalid password",
   EMAIL_VERIFICATION_REQUIRED: "Email verification is required",
-  USER_ID_IS_REQUIRED: 'userId is required',
-  EMIAL_CODE_IS_REQUIRED: 'Email code is required',
-  INVAILD_CODE: 'Invalid code',
-  EMAIL_IS_ALREADY_VERIFIED: 'Email is already verified'
+  USER_ID_IS_REQUIRED: "userId is required",
+  EMIAL_CODE_IS_REQUIRED: "Email code is required",
+  INVAILD_CODE: "Invalid code",
+  EMAIL_IS_ALREADY_VERIFIED: "Email is already verified",
+  FROM_ID_IS_REQUIRED: "From user id is required",
+  TO_ID_IS_REQUIRED: "To user id is required",
+  IS_GROUP_REQUIRED: "Is group required",
+  ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID: "Id should be correct mongo object id",
 };
