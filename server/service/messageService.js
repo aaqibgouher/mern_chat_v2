@@ -56,6 +56,11 @@ const getGroupMessages = async (params = {}) => {
   const { groupId, toUserId } = params;
   let messages = [];
 
+  //   check group exists or not
+  const group = await userService.getGroup("_id", groupId);
+
+  if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
+
   // check if user exists in the group
   const groupMember = await userService.getGroupMembersByGroupIdAndUser(
     groupId,

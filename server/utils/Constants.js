@@ -22,4 +22,5 @@ module.exports = {
   USER_DOES_NOT_EXIST_IN_GROUP: "User does not exists in the group",
   USER_REMOVED_FROM_GROUP: "User is removed from the group",
   USER_LEFT_GROUP: "User has left the group",
+  GROUP_DOES_NOT_EXISTS: "Group does not exists",
 };

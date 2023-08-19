@@ -119,6 +119,19 @@ const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
   return await GroupMemberModel.findOne({ groupId, addedTo: userId });
 };
 
+const getGroup = async (column = "_id", value = "", isDeleted = false) => {
+  const query = {};
+  query[column] = value;
+
+  let userQuery = GroupModel.findOne(query);
+
+  if (isDeleted) {
+    userQuery = userQuery.and({ isDeleted: true });
+  }
+
+  return await userQuery.exec();
+};
+
 // export
 module.exports = {
   getUser,
@@ -130,4 +143,5 @@ module.exports = {
   getGroupsForContacts,
   createGroup,
   getGroupMembersByGroupIdAndUser,
+  getGroup,
 };
