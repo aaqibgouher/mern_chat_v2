@@ -6,6 +6,7 @@ const userController = require("../controller/userController");
 
 // get logged in user detail
 router.get("/me", userController.getUser);
+console.log("user details");
 
 // get users for add user
 router.get("/search", userController.getSearchUsers);
