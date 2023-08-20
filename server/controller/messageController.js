@@ -40,7 +40,30 @@ const getGroupMessages = async (req, res) => {
   }
 };
 
+const removeMessage = async (req, res) => {
+  try {
+    const { fromUserId, toUserId, messageId, isDeleted, isGroup } = req.body;
+
+    // calling service file to delete message
+    let data = await messageService.removeMessage({
+      fromUserId: req.user._id,
+      toUserId,
+      messageId,
+      isDeleted,
+      isGroup,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully removed message.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from remove message controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getSoloMessages,
   getGroupMessages,
+  removeMessage,
 };

@@ -53,20 +53,22 @@ const getGroupMessages = async (params = {}) => {
   )
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
-  const { groupId, toUserId } = params;
+  const { groupId, userId } = params;
   let messages = [];
 
   //   check group exists or not
   const group = await userService.getGroup("_id", groupId);
 
+  // if group does not exists
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
   // check if user exists in the group
   const groupMember = await userService.getGroupMembersByGroupIdAndUser(
     groupId,
-    toUserId
+    userId
   );
 
+  // if group member does not exists
   if (!groupMember) throw Constants.USER_DOES_NOT_EXIST_IN_GROUP;
 
   //   if user exist in the group, check its not removed from group
@@ -84,8 +86,65 @@ const getGroupMessages = async (params = {}) => {
   return messages;
 };
 
+const getSoloMessageByFromAndToAndMessageId = async (
+  fromId,
+  toId,
+  messageId
+) => {
+  const query = {};
+  query["fromUserId"] = fromId;
+  query["toUserId"] = toId;
+  query["_id"] = messageId;
+
+  let userQuery = MessageModel.findOne(query);
+
+  return await userQuery.exec();
+};
+
+const removeMessage = async (params = {}) => {
+  if (!params || !params.fromUserId) throw Constants.FROM_ID_IS_REQUIRED;
+  if (!params || !params.toUserId) throw Constants.TO_ID_IS_REQUIRED;
+  if (!params || !params.messageId) throw Constants.MESSAGE_ID_REQUIRED;
+  if (!params || !params.isDeleted) throw Constants.IS_GROUP_REQUIRED;
+  if (!params || typeof params.isGroup !== "boolean")
+    throw Constants.IS_GROUP_REQUIRED;
+  if (
+    !Common.isObjectIdValid(params.fromUserId) ||
+    !Common.isObjectIdValid(params.toUserId) ||
+    !Common.isObjectIdValid(params.messageId)
+  )
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+
+  const { fromUserId, toUserId, messageId, isDeleted, isGroup } = params;
+
+  if (isGroup) {
+  } else {
+    // fetch message by from, to and message id
+    const message = await getSoloMessageByFromAndToAndMessageId(
+      fromUserId,
+      toUserId,
+      messageId
+    );
+
+    // if message not exists,
+    if (!message) throw Constants.MESSAGE_DOES_NOT_EXISTS_FOR_USERS;
+
+    // if exists, is deleted should be NOT_DELETED
+    if (message.isDeleted !== "NOT_DELETED")
+      throw Constants.MESSAGE_ALREADY_DELETED;
+
+    // delete message
+    message.isDeleted = isDeleted ? isDeleted : "NOT_DELETED";
+    const savedMessage = await message.save();
+
+    return { fromUserId, toUserId, savedMessage };
+  }
+};
+
 // export
 module.exports = {
   getSoloMessages,
   getGroupMessages,
+  removeMessage,
+  getSoloMessageByFromAndToAndMessageId,
 };

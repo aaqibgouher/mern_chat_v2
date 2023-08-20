@@ -19,5 +19,17 @@ router.post("/create-group", userController.createGroup);
 // exit a  group
 router.delete("/exit-group", userController.exitGroup);
 
+// add User In  Contacts
+router.post("/add-user-in-contact", userController.addUserInContact);
+
+// get users for profile
+router.get("/Contact-details", userController.getContactDetails);
+
+// remove group members from group
+router.delete("/remove-user-from-group", userController.removeUserFromGroup);
+
+// add participant to group
+router.post("/add-member-to-group", userController.addMemberToGroup);
+
 // exported router
 module.exports = router;
