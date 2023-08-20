@@ -23,4 +23,7 @@ module.exports = {
   USER_REMOVED_FROM_GROUP: "User is removed from the group",
   USER_LEFT_GROUP: "User has left the group",
   GROUP_DOES_NOT_EXISTS: "Group does not exists",
+  IS_GROUP_ADMIN_REQUIRED: "Is group admin required",
+  ADDING_USER_DOES_NOT_EXISTS: "Adding user does not exists",
+  USER_ALREADY_EXISTS_IN_GROUP: "User already exists in the group",
 };

@@ -16,5 +16,8 @@ router.get("/connected", userController.getConnectedUsers);
 // create group
 router.post("/create-group", userController.createGroup);
 
+// add participant to group
+router.post("/add-member-to-group", userController.addMemberToGroup);
+
 // exported router
 module.exports = router;

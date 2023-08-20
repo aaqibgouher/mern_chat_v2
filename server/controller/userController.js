@@ -72,9 +72,36 @@ const createGroup = async (req, res) => {
   }
 };
 
+// add member to group
+const addMemberToGroup = async (req, res) => {
+  try {
+    let { addUserId, groupId, isGroupAdmin } = req.body;
+
+    // calling service file to create group
+    let data = await userService.addMemberToGroup({
+      addedBy: req.user._id,
+      addedTo: addUserId,
+      groupId,
+      isGroupAdmin,
+    });
+
+    // returing success output, message, data
+    return await Output.success(
+      res,
+      "Successfully added member to group.",
+      data
+    );
+  } catch (e) {
+    // else error
+    console.log(e, "from add member to group users controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getUser,
   getSearchUsers,
   getConnectedUsers,
   createGroup,
+  addMemberToGroup,
 };

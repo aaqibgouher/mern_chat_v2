@@ -132,6 +132,52 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   return await userQuery.exec();
 };
 
+const addMemberToGroup = async (params = {}) => {
+  if (!params || !params.addedBy) throw Constants.FROM_ID_IS_REQUIRED;
+  if (!params || !params.addedTo) throw Constants.TO_ID_IS_REQUIRED;
+  if (!params || !params.groupId) throw Constants.GROUP_ID_IS_REQUIRED;
+  if (!params || typeof params.isGroupAdmin !== "boolean")
+    throw Constants.IS_GROUP_ADMIN_REQUIRED;
+  if (
+    !Common.isObjectIdValid(params.addedBy) ||
+    !Common.isObjectIdValid(params.addedTo) ||
+    !Common.isObjectIdValid(params.groupId)
+  )
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+
+  const { addedBy, addedTo, groupId, isGroupAdmin } = params;
+
+  // added to user id exists
+  const addedToUser = await getUser("_id", addedTo);
+
+  if (!addedToUser) throw Constants.ADDING_USER_DOES_NOT_EXISTS;
+
+  // check is verified or not
+  if (!addedToUser.isEmailVerified) throw Constants.EMAIL_VERIFICATION_REQUIRED;
+
+  // group id exists
+  const group = await getGroup("_id", groupId);
+
+  if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
+
+  // check if user exists in the group or not
+  const groupMember = await getGroupMembersByGroupIdAndUser(groupId, addedTo);
+
+  if (groupMember) throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+
+  // user does not exists in the group, we can add now
+  const groupMemberData = new GroupMemberModel({
+    addedBy,
+    addedTo,
+    groupId,
+    isGroupAdmin,
+  });
+
+  const savedGroupMember = groupMemberData.save();
+
+  return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
+};
+
 // export
 module.exports = {
   getUser,
@@ -144,4 +190,5 @@ module.exports = {
   createGroup,
   getGroupMembersByGroupIdAndUser,
   getGroup,
+  addMemberToGroup,
 };
