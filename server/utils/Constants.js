@@ -1,6 +1,6 @@
 module.exports = {
   NAME_IS_REQUIRED: "Name is required.",
-  EMAIL_IS_REQUIRED: "EMail is required",
+  EMAIL_IS_REQUIRED: "Email is required",
   PASSWORD_IS_REQUIRED: "Password is required",
   VALID_EMAIL_IS_REQUIRED: "Valid Email is required",
   VALID_PHONE_IS_REQUIRED: "Valid Phone is required",
@@ -8,7 +8,7 @@ module.exports = {
   USER_NOT_FOUND: "User not found",
   INVALID_PASSWORD: "Invalid password",
   EMAIL_VERIFICATION_REQUIRED: "Email verification is required",
-  USER_ID_IS_REQUIRED: "userId is required",
+  USER_ID_IS_REQUIRED: "User id is required",
   EMIAL_CODE_IS_REQUIRED: "Email code is required",
   INVAILD_CODE: "Invalid code",
   EMAIL_IS_ALREADY_VERIFIED: "Email is already verified",
@@ -29,4 +29,8 @@ module.exports = {
   MEMBERS_ARE_REQUIRED: "Members are required",
   ATLEAST_ONE_MEMBER_SHOULD_BE_ADDED:
     "Atleast one member is required to create the group",
+  MESSAGE_ID_REQUIRED: "Message id is required",
+  IS_GROUP_REQUIRED: "Is group required",
+  MESSAGE_DOES_NOT_EXISTS_FOR_USERS: "Message does not exists for these users",
+  MESSAGE_ALREADY_DELETED: "Message is already deleted",
 };

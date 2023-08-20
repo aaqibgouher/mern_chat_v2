@@ -51,9 +51,7 @@ const getUsers = async (filter = {}) => {
 };
 
 const getContacts = async (userId, filter = {}) => {
-  return await ContactModel.find({
-    $or: [{ fromUserId: userId }, { toUserId: userId }],
-  })
+  return await ContactModel.find({ fromUserId: userId })
     .populate("fromUserId", "-password")
     .populate("toUserId", "-password");
 };
@@ -205,6 +203,10 @@ const addMemberToGroup = async (params = {}) => {
   return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
 };
 
+const getContactByFromAndTo = async (fromUserId, toUserId) => {
+  return await ContactModel.findOne({ fromUserId, toUserId });
+};
+
 // export
 module.exports = {
   getUser,
@@ -218,4 +220,5 @@ module.exports = {
   getGroupMembersByGroupIdAndUser,
   getGroup,
   addMemberToGroup,
+  getContactByFromAndTo,
 };
