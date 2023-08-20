@@ -53,20 +53,22 @@ const getGroupMessages = async (params = {}) => {
   )
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
-  const { groupId, toUserId } = params;
+  const { groupId, userId } = params;
   let messages = [];
 
   //   check group exists or not
   const group = await userService.getGroup("_id", groupId);
 
+  // if group does not exists
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
   // check if user exists in the group
   const groupMember = await userService.getGroupMembersByGroupIdAndUser(
     groupId,
-    toUserId
+    userId
   );
 
+  // if group member does not exists
   if (!groupMember) throw Constants.USER_DOES_NOT_EXIST_IN_GROUP;
 
   //   if user exist in the group, check its not removed from group
