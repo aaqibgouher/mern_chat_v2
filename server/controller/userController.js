@@ -28,6 +28,16 @@ const getSearchUsers = async (req, res) => {
     // Filter out the logged-in user
     data = data.filter((user) => !user._id.equals(userId));
 
+    // for each users, check connection with logged in user, if connection exists then set new key called isConnected to true, else false
+    for (const dataIndex in data) {
+      const contact = await userService.getContactByFromAndTo(
+        req.user._id,
+        data[dataIndex]._id
+      );
+
+      data[dataIndex].isConnected = contact ? true : false;
+    }
+
     // returing success output, message, data
     return await Output.success(res, "Successfully get search users.", data);
   } catch (e) {
@@ -53,7 +63,7 @@ const getConnectedUsers = async (req, res) => {
 
 const createGroup = async (req, res) => {
   try {
-    const { name, description, profileURL } = req.body;
+    const { name, description, profileURL, members } = req.body;
 
     // calling service file to create group
     let data = await userService.createGroup({
@@ -61,6 +71,7 @@ const createGroup = async (req, res) => {
       createdBy: req.user._id,
       description,
       profileURL,
+      members,
     });
 
     // returing success output, message, data
@@ -83,6 +94,30 @@ const addUserInContact = async (req, res) => {
   } catch (e) {
     // else error
     console.log(e, "from get search users controller");
+  }
+}
+// add member to group
+const addMemberToGroup = async (req, res) => {
+  try {
+    let { addUserId, groupId, isGroupAdmin } = req.body;
+
+    // calling service file to create group
+    let data = await userService.addMemberToGroup({
+      addedBy: req.user._id,
+      addedTo: addUserId,
+      groupId,
+      isGroupAdmin,
+    });
+
+    // returing success output, message, data
+    return await Output.success(
+      res,
+      "Successfully added member to group.",
+      data
+    );
+  } catch (e) {
+    // else error
+    console.log(e, "from add member to group users controller");
     return await Output.error(res, e);
   }
 };
@@ -126,4 +161,5 @@ module.exports = {
   addUserInContact,
   getContactDetails,
   removeUserFromGroup,
+  addMemberToGroup,
 };

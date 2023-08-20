@@ -52,9 +52,7 @@ const getUsers = async (filter = {}) => {
 };
 
 const getContacts = async (userId, filter = {}) => {
-  return await ContactModel.find({
-    $or: [{ fromUserId: userId }, { toUserId: userId }],
-  })
+  return await ContactModel.find({ fromUserId: userId })
     .populate("fromUserId", "-password")
     .populate("toUserId", "-password");
 };
@@ -82,18 +80,26 @@ const getGroups = async (column = "_id", value = "") => {
   return await userQuery.exec();
 };
 
+// create group
 const createGroup = async (params = {}) => {
+  // validations
   if (!params || !params.name || typeof params.name !== "string")
     throw Constants.NAME_IS_REQUIRED;
   if (!params || !params.createdBy) throw Constants.CREATED_BY_ID_IS_REQUIRED;
   if (!Common.isObjectIdValid(params.createdBy))
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+  if (!params || !params.members) throw Constants.MEMBERS_ARE_REQUIRED;
 
   const { name, createdBy, description, profileURL } = params;
+  let { members } = params;
+
+  // atleast one members should be in the group
+  if (!members.length) throw Constants.ATLEAST_ONE_MEMBER_SHOULD_BE_ADDED;
 
   // check if group already exists by name by same user
   const groups = await getGroups("createdBy", createdBy);
 
+  // looping an comparing name, if exists means group is already created by user
   for (const groupIndex in groups) {
     if (groups[groupIndex].name === name) {
       throw Constants.GROUP_ALREADY_EXISTS;
@@ -106,14 +112,33 @@ const createGroup = async (params = {}) => {
     name,
     createdBy,
     description,
-    profileURL: "https://cdn-icons-png.flaticon.com/512/25/25437.png",
+    profileURL: profileURL
+      ? profileURL
+      : "https://cdn-icons-png.flaticon.com/512/25/25437.png",
     isDeleted: false,
     isGroup: true,
   });
 
   const savedGroup = await groupData.save();
 
-  return savedGroup._id;
+  // once group is added, we need to add participants as well
+  // adding created by to members id at first index
+  members.unshift(createdBy);
+
+  let savedMembers = [];
+
+  // looping over members, and adding to group member
+  for (const member in members) {
+    savedMembers.push(
+      await addMemberToGroup({
+        addedBy: createdBy,
+        addedTo: Common.convertToMongoObjectId(members[member]),
+        groupId: savedGroup._id,
+      })
+    );
+  }
+
+  return savedMembers;
 };
 
 const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
@@ -284,6 +309,55 @@ const updateGroupMemberDetails = async (params) => {
   if (result.nModified === 1) return true;
   return false;
 }
+// add member to group
+const addMemberToGroup = async (params = {}) => {
+  // validations
+  if (!params || !params.addedBy) throw Constants.FROM_ID_IS_REQUIRED;
+  if (!params || !params.addedTo) throw Constants.TO_ID_IS_REQUIRED;
+  if (!params || !params.groupId) throw Constants.GROUP_ID_IS_REQUIRED;
+  if (
+    !Common.isObjectIdValid(params.addedBy) ||
+    !Common.isObjectIdValid(params.addedTo) ||
+    !Common.isObjectIdValid(params.groupId)
+  )
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+
+  const { addedBy, addedTo, groupId } = params;
+
+  // added to user id exists
+  const addedToUser = await getUser("_id", addedTo);
+
+  if (!addedToUser) throw Constants.ADDING_USER_DOES_NOT_EXISTS;
+
+  // check is verified or not
+  if (!addedToUser.isEmailVerified) throw Constants.EMAIL_VERIFICATION_REQUIRED;
+
+  // group id exists
+  const group = await getGroup("_id", groupId);
+
+  if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
+
+  // check if user exists in the group or not
+  const groupMember = await getGroupMembersByGroupIdAndUser(groupId, addedTo);
+
+  if (groupMember) throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+
+  // user does not exists in the group, we can add now
+  const groupMemberData = new GroupMemberModel({
+    addedBy,
+    addedTo,
+    groupId,
+    isGroupAdmin: false,
+  });
+
+  const savedGroupMember = groupMemberData.save();
+
+  return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
+};
+
+const getContactByFromAndTo = async (fromUserId, toUserId) => {
+  return await ContactModel.findOne({ fromUserId, toUserId });
+};
 
 // export
 module.exports = {
@@ -300,4 +374,6 @@ module.exports = {
   addUserInContact,
   getContactDetails,
   removeUserFromGroup,
+  addMemberToGroup,
+  getContactByFromAndTo,
 };

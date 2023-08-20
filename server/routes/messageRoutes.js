@@ -10,5 +10,8 @@ router.get("/solo", messageController.getSoloMessages);
 // get logged in user message for group chat
 router.get("/group/:groupId", messageController.getGroupMessages);
 
+// delete message
+router.delete("/remove-message", messageController.removeMessage);
+
 // exported router
 module.exports = router;
