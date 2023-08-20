@@ -81,18 +81,26 @@ const getGroups = async (column = "_id", value = "") => {
   return await userQuery.exec();
 };
 
+// create group
 const createGroup = async (params = {}) => {
+  // validations
   if (!params || !params.name || typeof params.name !== "string")
     throw Constants.NAME_IS_REQUIRED;
   if (!params || !params.createdBy) throw Constants.CREATED_BY_ID_IS_REQUIRED;
   if (!Common.isObjectIdValid(params.createdBy))
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+  if (!params || !params.members) throw Constants.MEMBERS_ARE_REQUIRED;
 
   const { name, createdBy, description, profileURL } = params;
+  let { members } = params;
+
+  // atleast one members should be in the group
+  if (!members.length) throw Constants.ATLEAST_ONE_MEMBER_SHOULD_BE_ADDED;
 
   // check if group already exists by name by same user
   const groups = await getGroups("createdBy", createdBy);
 
+  // looping an comparing name, if exists means group is already created by user
   for (const groupIndex in groups) {
     if (groups[groupIndex].name === name) {
       throw Constants.GROUP_ALREADY_EXISTS;
@@ -105,14 +113,33 @@ const createGroup = async (params = {}) => {
     name,
     createdBy,
     description,
-    profileURL: "https://cdn-icons-png.flaticon.com/512/25/25437.png",
+    profileURL: profileURL
+      ? profileURL
+      : "https://cdn-icons-png.flaticon.com/512/25/25437.png",
     isDeleted: false,
     isGroup: true,
   });
 
   const savedGroup = await groupData.save();
 
-  return savedGroup._id;
+  // once group is added, we need to add participants as well
+  // adding created by to members id at first index
+  members.unshift(createdBy);
+
+  let savedMembers = [];
+
+  // looping over members, and adding to group member
+  for (const member in members) {
+    savedMembers.push(
+      await addMemberToGroup({
+        addedBy: createdBy,
+        addedTo: Common.convertToMongoObjectId(members[member]),
+        groupId: savedGroup._id,
+      })
+    );
+  }
+
+  return savedMembers;
 };
 
 const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
@@ -132,12 +159,12 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   return await userQuery.exec();
 };
 
+// add member to group
 const addMemberToGroup = async (params = {}) => {
+  // validations
   if (!params || !params.addedBy) throw Constants.FROM_ID_IS_REQUIRED;
   if (!params || !params.addedTo) throw Constants.TO_ID_IS_REQUIRED;
   if (!params || !params.groupId) throw Constants.GROUP_ID_IS_REQUIRED;
-  if (!params || typeof params.isGroupAdmin !== "boolean")
-    throw Constants.IS_GROUP_ADMIN_REQUIRED;
   if (
     !Common.isObjectIdValid(params.addedBy) ||
     !Common.isObjectIdValid(params.addedTo) ||
@@ -145,7 +172,7 @@ const addMemberToGroup = async (params = {}) => {
   )
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
-  const { addedBy, addedTo, groupId, isGroupAdmin } = params;
+  const { addedBy, addedTo, groupId } = params;
 
   // added to user id exists
   const addedToUser = await getUser("_id", addedTo);
@@ -170,7 +197,7 @@ const addMemberToGroup = async (params = {}) => {
     addedBy,
     addedTo,
     groupId,
-    isGroupAdmin,
+    isGroupAdmin: false,
   });
 
   const savedGroupMember = groupMemberData.save();

@@ -75,6 +75,10 @@ const isObjectIdValid = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
 
+const convertToMongoObjectId = (id) => {
+  return new mongoose.Types.ObjectId(id);
+};
+
 module.exports = {
   isEmail,
   hashPassword,
@@ -84,4 +88,5 @@ module.exports = {
   getEmailSubject,
   getEmailContent,
   isObjectIdValid,
+  convertToMongoObjectId,
 };

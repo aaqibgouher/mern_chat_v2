@@ -53,7 +53,7 @@ const getConnectedUsers = async (req, res) => {
 
 const createGroup = async (req, res) => {
   try {
-    const { name, description, profileURL } = req.body;
+    const { name, description, profileURL, members } = req.body;
 
     // calling service file to create group
     let data = await userService.createGroup({
@@ -61,6 +61,7 @@ const createGroup = async (req, res) => {
       createdBy: req.user._id,
       description,
       profileURL,
+      members,
     });
 
     // returing success output, message, data

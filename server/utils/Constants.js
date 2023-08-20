@@ -26,4 +26,7 @@ module.exports = {
   IS_GROUP_ADMIN_REQUIRED: "Is group admin required",
   ADDING_USER_DOES_NOT_EXISTS: "Adding user does not exists",
   USER_ALREADY_EXISTS_IN_GROUP: "User already exists in the group",
+  MEMBERS_ARE_REQUIRED: "Members are required",
+  ATLEAST_ONE_MEMBER_SHOULD_BE_ADDED:
+    "Atleast one member is required to create the group",
 };
