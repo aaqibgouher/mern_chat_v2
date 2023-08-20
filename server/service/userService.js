@@ -168,7 +168,7 @@ const getGroupMembers = async (column = "_id", value = "") => {
   query['isDeleted'] = false;
   query['isLeft'] = false;
   const userQuery = GroupMemberModel.find(query)
-    .populate('addedTo');
+    .populate('addedTo', '-password');
 
   return await userQuery.exec();
 };
@@ -275,18 +275,19 @@ const removeUserFromGroup = async (params = {}) => {
 
   // check admin can not delete superadmin
   const toRemoveGroupMember = await getGroupMembersByGroupIdAndUser(group_id, toRemove);
-  if (toRemoveGroupMember.addedBy == toRemoveGroupMember.addedTo)
+  if (toRemoveGroupMember.addedBy.toString().trim() === toRemoveGroupMember.addedTo.toString().trim()) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
+  }
 
   // now delete user from group 
   const memberUpdatedData = await updateGroupMemberDetails({
     id: toRemoveGroupMember._id,
-    data: { isDeleted: true },
+    data: { deletedAt: new Date(), isDeleted: true },
   });
 
   if (memberUpdatedData) throw Constants.SOME_THING_WENT_WRONG;
   const removeBy = await getUser("_id", removedBy);
-  const toRemoved = await getUser("_id", removedBy);
+  const toRemoved = await getUser("_id", toRemove);
   const resData = [{
     'removedBy': {
       id: removeBy._id,

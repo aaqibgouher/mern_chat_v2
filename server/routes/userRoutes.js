@@ -24,6 +24,7 @@ router.get("/Contact-details", userController.getContactDetails);
 
 // remove group members from group
 router.delete("/remove-user-from-group", userController.removeUserFromGroup);
+
 // add participant to group
 router.post("/add-member-to-group", userController.addMemberToGroup);
 
