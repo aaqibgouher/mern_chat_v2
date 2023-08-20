@@ -72,9 +72,58 @@ const createGroup = async (req, res) => {
   }
 };
 
+const addUserInContact = async (req, res) => {
+  try {
+
+    const fromUserId = req.user._id;
+    const toUserId = req.body.to_user_id;
+    let data = await userService.addUserInContact({ fromUserId, toUserId });
+    // returing success output, message, data
+    return await Output.success(res, "Added User SuccessFully in Contacts", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from get search users controller");
+    return await Output.error(res, e);
+  }
+};
+
+const getContactDetails = async (req, res) => {
+  try {
+
+    const { profileId, isGroup } = req.body;
+    let data = await userService.getContactDetails({ profileId, isGroup });
+    // returing success output, message, data
+    return await Output.success(res, "Added User SuccessFully in Contacts", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from get search users controller");
+    return await Output.error(res, e);
+  }
+};
+
+const removeUserFromGroup = async (req, res) => {
+  try {
+
+    const { group_id, user_id } = req.body;
+    const toRemove = user_id;
+    const removedBy = req.user._id;
+    let data = await userService.removeUserFromGroup({ group_id, toRemove, removedBy });
+    // returing success output, message, data
+    return await Output.success(res, " User Removed From group", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from get search users controller");
+    return await Output.error(res, e);
+  }
+};
+
+
 module.exports = {
   getUser,
   getSearchUsers,
   getConnectedUsers,
   createGroup,
+  addUserInContact,
+  getContactDetails,
+  removeUserFromGroup,
 };

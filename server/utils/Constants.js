@@ -23,4 +23,12 @@ module.exports = {
   USER_REMOVED_FROM_GROUP: "User is removed from the group",
   USER_LEFT_GROUP: "User has left the group",
   GROUP_DOES_NOT_EXISTS: "Group does not exists",
+  USER_NOT_VERIFIED: 'User not verified',
+  USER_ALREADY_EXISTS_IN_CONTACTS: 'User already exists in the contacts',
+  INVAILD_USER_ID_FORMATE: 'Invalid user id format',
+  PROFILE_ID_REQUIRED: 'ProfileId required',
+  USER_IS_NOT_ADMIN: 'You are not Admin',
+  USER_CANNOT_DELETE_SUPERADMIN: 'You cannot delete superadmin who created this group',
+  SOME_THING_WENT_WRONG: 'Something went wrong',
+  RECORD_NOT_FOUND: 'Record not found',
 };
