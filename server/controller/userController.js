@@ -72,9 +72,29 @@ const createGroup = async (req, res) => {
   }
 };
 
+const exitGroup = async (req, res) => {
+  try {
+    const { groupId } = req.body;
+    const userId = req.user._id;
+    // calling service file to exit group
+    let data = await userService.exitGroup({
+      userId,
+      groupId,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully exited group.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from exit group users controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getUser,
   getSearchUsers,
   getConnectedUsers,
   createGroup,
+  exitGroup,
 };

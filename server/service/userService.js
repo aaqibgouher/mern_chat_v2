@@ -132,6 +132,41 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   return await userQuery.exec();
 };
 
+const exitGroup = async (params = {}) => {
+  if (!Common.isObjectIdValid(params.groupId))
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+
+  const { userId, groupId } = params;
+// check if group exists
+
+  // check if user is not in that group
+  const groupMember = await getGroupMembersByGroupIdAndUser( groupId, userId );
+
+  if(!groupMember)
+    throw "not found";
+  
+  if(groupMember.isGroupAdmin){
+
+    const members = GroupMemberModel.find({groupId: groupId, isGroupAdmin: true, addedTo: { $ne: userId }, isLeft: false, isDeleted: false });
+
+    let newAdmin = {};
+    if(!members.length){
+      newAdmin = await GroupMemberModel.findOne({ groupId: groupId, addedTo: { $ne: userId }});
+    }
+
+    if(!newAdmin)
+      throw "you are the only participant";
+    
+    newAdmin.isGroupAdmin = true;
+    newAdmin.save();
+  }
+
+  //await GroupMemberModel.findOneAndDelete({ addedTo: userId, groupId: groupId});
+  groupMember.isLeft = true;
+  groupMember.save();
+  return {userId};
+};
+
 // export
 module.exports = {
   getUser,
@@ -144,4 +179,5 @@ module.exports = {
   createGroup,
   getGroupMembersByGroupIdAndUser,
   getGroup,
+  exitGroup,
 };

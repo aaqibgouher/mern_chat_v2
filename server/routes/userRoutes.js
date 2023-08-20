@@ -6,7 +6,6 @@ const userController = require("../controller/userController");
 
 // get logged in user detail
 router.get("/me", userController.getUser);
-console.log("user details");
 
 // get users for add user
 router.get("/search", userController.getSearchUsers);
@@ -16,6 +15,9 @@ router.get("/connected", userController.getConnectedUsers);
 
 // create group
 router.post("/create-group", userController.createGroup);
+
+// exit a  group
+router.delete("/exit-group", userController.exitGroup);
 
 // exported router
 module.exports = router;
