@@ -132,7 +132,7 @@ const createGroup = async (params = {}) => {
     savedMembers.push(
       await addMemberToGroup({
         addedBy: createdBy,
-        addedTo: Common.convertToMongoObjectId(members[member]),
+        addedTo: await Common.convertToMongoObjectId(members[member]),
         groupId: savedGroup._id,
       })
     );
@@ -144,7 +144,6 @@ const createGroup = async (params = {}) => {
 const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
   return await GroupMemberModel.findOne({ groupId, addedTo: userId });
 };
-
 
 const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   const query = {};
@@ -159,30 +158,27 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   return await userQuery.exec();
 };
 
-
-// get GroupMember 
+// get GroupMember
 const getGroupMembers = async (column = "_id", value = "") => {
-
   const query = {};
   query[column] = value;
-  query['isDeleted'] = false;
-  query['isLeft'] = false;
-  const userQuery = GroupMemberModel.find(query)
-    .populate('addedTo', '-password');
+  query["isDeleted"] = false;
+  query["isLeft"] = false;
+  const userQuery = GroupMemberModel.find(query).populate(
+    "addedTo",
+    "-password"
+  );
 
   return await userQuery.exec();
 };
 
-
 const addUserInContact = async (params = {}) => {
-
   console.log(params);
   if (!params || !params.toUserId || typeof params.toUserId !== "string")
     throw Constants.USER_ID_IS_REQUIRED;
 
   if (!Common.isObjectIdValid(params.toUserId))
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
-
 
   const user = await getUser("_id", params.toUserId);
 
@@ -198,8 +194,7 @@ const addUserInContact = async (params = {}) => {
   const savedConatctToUser = await addToConatct(toUserId, fromUserId);
 
   return { savedConatctFromUser, savedConatctToUser };
-
-}
+};
 
 const addToConatct = async (fromUserId, toUserId) => {
   const contactData = new ContactModel({
@@ -210,42 +205,39 @@ const addToConatct = async (fromUserId, toUserId) => {
   const savedConatct = await contactData.save();
 
   return savedConatct._id;
-}
+};
+
 const getConatct = async (fromUserId, toUserId) => {
   const contacts = await ContactModel.findOne({
     fromUserId,
     toUserId,
   });
-  return contacts
-}
+  return contacts;
+};
 // here we need to pass two thing isGroup true/false or profileId :
-//case 1 
-//if isGroup fasle then profileId  will be just userId 
+//case 1
+//if isGroup fasle then profileId  will be just userId
 //case 2:
 //and isGroup is true  then the profileId will be group id
 
 const getContactDetails = async (params) => {
-
   const { profileId, isGroup } = params;
 
   if (!params || !params.profileId || typeof params.profileId !== "string")
     throw Constants.PROFILE_ID_REQUIRED;
 
   if (isGroup) {
-
     const group = await getGroup("_id", profileId);
     if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
-    const groupMembersData = await getGroupMembers('groupId', group._id);
+    const groupMembersData = await getGroupMembers("groupId", group._id);
     return { group, groupMembersData };
-
   } else {
-
     const user = await getUser("_id", profileId);
     if (!user) throw Constants.USER_NOT_FOUND;
     return user;
   }
-}
+};
 
 const removeUserFromGroup = async (params = {}) => {
   const { group_id, toRemove, removedBy } = params;
@@ -260,8 +252,7 @@ const removeUserFromGroup = async (params = {}) => {
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
   const group = await getGroup("_id", group_id);
-  if (!group)
-    throw Constants.GROUP_DOES_NOT_EXISTS;
+  if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
   const memberToRemove = await GroupMemberModel.findOne({ addedTo: toRemove });
   const memberIsRemoveBy = await GroupMemberModel.findOne({ addedTo: removedBy });
@@ -280,7 +271,7 @@ const removeUserFromGroup = async (params = {}) => {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
 
-  // now delete user from group 
+  // now delete user from group
   const memberUpdatedData = await updateGroupMemberDetails({
     id: memberToRemove._id,
     data: { deletedAt: new Date(), isDeleted: true },
@@ -300,14 +291,14 @@ const removeUserFromGroup = async (params = {}) => {
     },
   }];
   return resData;
-}
+};
 
 const updateGroupMemberDetails = async (params) => {
   const { id, data } = params;
   const result = await GroupMemberModel.updateOne({ _id: id }, data);
   if (result.nModified === 1) return true;
   return false;
-}
+};
 // add member to group
 const addMemberToGroup = async (params = {}) => {
   // validations
@@ -336,22 +327,43 @@ const addMemberToGroup = async (params = {}) => {
 
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
+  // check if addedBy is admin
+  const addedByGroupMember = await getGroupMembersByGroupIdAndUser(
+    groupId,
+    addedBy
+  );
+
+  if (addedByGroupMember && !addedByGroupMember.isGroupAdmin)
+    throw Constants.USER_IS_NOT_ADMIN;
+
   // check if user exists in the group or not
   const groupMember = await getGroupMembersByGroupIdAndUser(groupId, addedTo);
 
-  if (groupMember) throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+  // if group member already exists, check if deleted, if deleted change delete to false, and if not deleted, then already exists
+  if (groupMember) {
+    if (groupMember.isDeleted) {
+      groupMember.isDeleted = false;
+      groupMember.deletedAt = null;
+
+      const savedGroupMemberDeleted = await groupMember.save();
+
+      return savedGroupMemberDeleted;
+    } else {
+      throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+    }
+  }
 
   // user does not exists in the group, we can add now
   const groupMemberData = new GroupMemberModel({
     addedBy,
     addedTo,
     groupId,
-    isGroupAdmin: false,
+    isGroupAdmin: addedBy.equals(addedTo) ? true : false,
   });
 
-  const savedGroupMember = groupMemberData.save();
+  const savedGroupMember = await groupMemberData.save();
 
-  return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
+  return savedGroupMember;
 };
 
 const getContactByFromAndTo = async (fromUserId, toUserId) => {
