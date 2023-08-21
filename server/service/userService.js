@@ -337,10 +337,31 @@ const addMemberToGroup = async (params = {}) => {
 
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
+  // check if addedBy is admin
+  const addedByGroupMember = await getGroupMembersByGroupIdAndUser(
+    groupId,
+    addedBy
+  );
+
+  if (addedByGroupMember && !addedByGroupMember.isGroupAdmin)
+    throw Constants.USER_IS_NOT_ADMIN;
+
   // check if user exists in the group or not
   const groupMember = await getGroupMembersByGroupIdAndUser(groupId, addedTo);
 
-  if (groupMember) throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+  // if group member already exists, check if deleted, if deleted change delete to false, and if not deleted, then already exists
+  if (groupMember) {
+    if (groupMember.isDeleted) {
+      groupMember.isDeleted = false;
+      groupMember.deletedAt = null;
+
+      const savedGroupMemberDeleted = await groupMember.save();
+
+      return savedGroupMemberDeleted;
+    } else {
+      throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+    }
+  }
 
   // user does not exists in the group, we can add now
   const groupMemberData = new GroupMemberModel({
