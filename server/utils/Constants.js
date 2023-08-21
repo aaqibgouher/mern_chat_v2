@@ -21,6 +21,7 @@ module.exports = {
   GROUP_ID_IS_REQUIRED: "Group id is required",
   USER_DOES_NOT_EXIST_IN_GROUP: "User does not exists in the group",
   USER_REMOVED_FROM_GROUP: "User is removed from the group",
+  MEMBERS_NOT_FOUND: 'Members not found in this Group',
   USER_LEFT_GROUP: "User has left the group",
   GROUP_DOES_NOT_EXISTS: "Group does not exists",
   USER_NOT_VERIFIED: 'User not verified',

@@ -132,7 +132,7 @@ const createGroup = async (params = {}) => {
     savedMembers.push(
       await addMemberToGroup({
         addedBy: createdBy,
-        addedTo: Common.convertToMongoObjectId(members[member]),
+        addedTo: await Common.convertToMongoObjectId(members[member]),
         groupId: savedGroup._id,
       })
     );
@@ -156,47 +156,6 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   }
 
   return await userQuery.exec();
-};
-
-const exitGroup = async (params = {}) => {
-  if (!Common.isObjectIdValid(params.groupId))
-    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
-
-  const { userId, groupId } = params;
-  // check if group exists
-
-  // check if user is not in that group
-  const groupMember = await getGroupMembersByGroupIdAndUser(groupId, userId);
-
-  if (!groupMember) throw "not found";
-
-  if (groupMember.isGroupAdmin) {
-    const members = GroupMemberModel.find({
-      groupId: groupId,
-      isGroupAdmin: true,
-      addedTo: { $ne: userId },
-      isLeft: false,
-      isDeleted: false,
-    });
-
-    let newAdmin = {};
-    if (!members.length) {
-      newAdmin = await GroupMemberModel.findOne({
-        groupId: groupId,
-        addedTo: { $ne: userId },
-      });
-    }
-
-    if (!newAdmin) throw "you are the only participant";
-
-    newAdmin.isGroupAdmin = true;
-    newAdmin.save();
-  }
-
-  //await GroupMemberModel.findOneAndDelete({ addedTo: userId, groupId: groupId});
-  groupMember.isLeft = true;
-  groupMember.save();
-  return { userId };
 };
 
 // get GroupMember
@@ -294,52 +253,42 @@ const removeUserFromGroup = async (params = {}) => {
   const group = await getGroup("_id", group_id);
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
-  const removedByGroupMember = await getGroupMembersByGroupIdAndUser(
-    group_id,
-    removedBy
-  );
-  if (!removedByGroupMember) throw Constants.RECORD_NOT_FOUND;
+  const memberToRemove = await GroupMemberModel.findOne({ addedTo: toRemove });
+  const memberIsRemoveBy = await GroupMemberModel.findOne({ addedTo: removedBy });
 
-  if (removedByGroupMember.isDeleted) throw Constants.USER_NOT_FOUND;
+  if (!memberToRemove || memberToRemove.isDeleted)
+    throw Constants.MEMBERS_NOT_FOUND;
 
-  if (!removedByGroupMember.isGroupAdmin) throw Constants.USER_IS_NOT_ADMIN;
+  if (!memberIsRemoveBy || memberIsRemoveBy.isDeleted)
+    throw Constants.MEMBERS_NOT_FOUND;
+
+  if (!memberIsRemoveBy.isGroupAdmin)
+    throw Constants.USER_IS_NOT_ADMIN;
 
   // check admin can not delete superadmin
-  const toRemoveGroupMember = await getGroupMembersByGroupIdAndUser(
-    group_id,
-    toRemove
-  );
-  if (
-    toRemoveGroupMember.addedBy.toString().trim() ===
-    toRemoveGroupMember.addedTo.toString().trim()
-  ) {
+  if (memberToRemove.addedBy.toString().trim() === memberToRemove.addedTo.toString().trim()) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
 
   // now delete user from group
   const memberUpdatedData = await updateGroupMemberDetails({
-    id: toRemoveGroupMember._id,
+    id: memberToRemove._id,
     data: { deletedAt: new Date(), isDeleted: true },
   });
 
   if (memberUpdatedData) throw Constants.SOME_THING_WENT_WRONG;
   const removeBy = await getUser("_id", removedBy);
   const toRemoved = await getUser("_id", toRemove);
-  const resData = [
-    {
-      removedBy: {
-        id: removeBy._id,
-        name: removeBy.name,
-        createdAt: removeBy.createdAt, // You can replace this with the actual timestamp field you need
-        updatedAt: removeBy.updatedAt, // You can replace this with the actual timestamp field you need
-      },
-      toRemoved: {
-        id: toRemoved._id,
-        name: toRemoved.name,
-        updatedAt: toRemoved.updatedAt, // You can replace this with the actual timestamp field you need
-      },
+  const resData = [{
+    'removedBy': {
+      id: removeBy._id,
+      name: removeBy.name,
     },
-  ];
+    'toRemoved': {
+      id: toRemoved._id,
+      name: toRemoved.name,
+    },
+  }];
   return resData;
 };
 
@@ -377,22 +326,43 @@ const addMemberToGroup = async (params = {}) => {
 
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
+  // check if addedBy is admin
+  const addedByGroupMember = await getGroupMembersByGroupIdAndUser(
+    groupId,
+    addedBy
+  );
+
+  if (addedByGroupMember && !addedByGroupMember.isGroupAdmin)
+    throw Constants.USER_IS_NOT_ADMIN;
+
   // check if user exists in the group or not
   const groupMember = await getGroupMembersByGroupIdAndUser(groupId, addedTo);
 
-  if (groupMember) throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+  // if group member already exists, check if deleted, if deleted change delete to false, and if not deleted, then already exists
+  if (groupMember) {
+    if (groupMember.isDeleted) {
+      groupMember.isDeleted = false;
+      groupMember.deletedAt = null;
+
+      const savedGroupMemberDeleted = await groupMember.save();
+
+      return savedGroupMemberDeleted;
+    } else {
+      throw Constants.USER_ALREADY_EXISTS_IN_GROUP;
+    }
+  }
 
   // user does not exists in the group, we can add now
   const groupMemberData = new GroupMemberModel({
     addedBy,
     addedTo,
     groupId,
-    isGroupAdmin: false,
+    isGroupAdmin: addedBy.equals(addedTo) ? true : false,
   });
 
-  const savedGroupMember = groupMemberData.save();
+  const savedGroupMember = await groupMemberData.save();
 
-  return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
+  return savedGroupMember;
 };
 
 const getContactByFromAndTo = async (fromUserId, toUserId) => {
