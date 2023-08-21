@@ -263,25 +263,26 @@ const removeUserFromGroup = async (params = {}) => {
   if (!group)
     throw Constants.GROUP_DOES_NOT_EXISTS;
 
-  const removedByGroupMember = await getGroupMembersByGroupIdAndUser(group_id, removedBy);
-  if (!removedByGroupMember)
-    throw Constants.RECORD_NOT_FOUND;
+  const memberToRemove = await GroupMemberModel.findOne({ addedTo: toRemove });
+  const memberIsRemoveBy = await GroupMemberModel.findOne({ addedTo: removedBy });
 
-  if (removedByGroupMember.isDeleted)
-    throw Constants.USER_NOT_FOUND;
+  if (!memberToRemove || memberToRemove.isDeleted)
+    throw Constants.MEMBERS_NOT_FOUND;
 
-  if (!removedByGroupMember.isGroupAdmin)
+  if (!memberIsRemoveBy || memberIsRemoveBy.isDeleted)
+    throw Constants.MEMBERS_NOT_FOUND;
+
+  if (!memberIsRemoveBy.isGroupAdmin)
     throw Constants.USER_IS_NOT_ADMIN;
 
   // check admin can not delete superadmin
-  const toRemoveGroupMember = await getGroupMembersByGroupIdAndUser(group_id, toRemove);
-  if (toRemoveGroupMember.addedBy.toString().trim() === toRemoveGroupMember.addedTo.toString().trim()) {
+  if (memberToRemove.addedBy.toString().trim() === memberToRemove.addedTo.toString().trim()) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
 
   // now delete user from group 
   const memberUpdatedData = await updateGroupMemberDetails({
-    id: toRemoveGroupMember._id,
+    id: memberToRemove._id,
     data: { deletedAt: new Date(), isDeleted: true },
   });
 
@@ -292,13 +293,10 @@ const removeUserFromGroup = async (params = {}) => {
     'removedBy': {
       id: removeBy._id,
       name: removeBy.name,
-      createdAt: removeBy.createdAt, // You can replace this with the actual timestamp field you need
-      updatedAt: removeBy.updatedAt, // You can replace this with the actual timestamp field you need
     },
     'toRemoved': {
       id: toRemoved._id,
       name: toRemoved.name,
-      updatedAt: toRemoved.updatedAt, // You can replace this with the actual timestamp field you need
     },
   }];
   return resData;
