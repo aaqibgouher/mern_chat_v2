@@ -132,7 +132,7 @@ const createGroup = async (params = {}) => {
     savedMembers.push(
       await addMemberToGroup({
         addedBy: createdBy,
-        addedTo: Common.convertToMongoObjectId(members[member]),
+        addedTo: await Common.convertToMongoObjectId(members[member]),
         groupId: savedGroup._id,
       })
     );
@@ -144,7 +144,6 @@ const createGroup = async (params = {}) => {
 const getGroupMembersByGroupIdAndUser = async (groupId, userId) => {
   return await GroupMemberModel.findOne({ groupId, addedTo: userId });
 };
-
 
 const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   const query = {};
@@ -159,30 +158,27 @@ const getGroup = async (column = "_id", value = "", isDeleted = false) => {
   return await userQuery.exec();
 };
 
-
-// get GroupMember 
+// get GroupMember
 const getGroupMembers = async (column = "_id", value = "") => {
-
   const query = {};
   query[column] = value;
-  query['isDeleted'] = false;
-  query['isLeft'] = false;
-  const userQuery = GroupMemberModel.find(query)
-    .populate('addedTo', '-password');
+  query["isDeleted"] = false;
+  query["isLeft"] = false;
+  const userQuery = GroupMemberModel.find(query).populate(
+    "addedTo",
+    "-password"
+  );
 
   return await userQuery.exec();
 };
 
-
 const addUserInContact = async (params = {}) => {
-
   console.log(params);
   if (!params || !params.toUserId || typeof params.toUserId !== "string")
     throw Constants.USER_ID_IS_REQUIRED;
 
   if (!Common.isObjectIdValid(params.toUserId))
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
-
 
   const user = await getUser("_id", params.toUserId);
 
@@ -198,8 +194,7 @@ const addUserInContact = async (params = {}) => {
   const savedConatctToUser = await addToConatct(toUserId, fromUserId);
 
   return { savedConatctFromUser, savedConatctToUser };
-
-}
+};
 
 const addToConatct = async (fromUserId, toUserId) => {
   const contactData = new ContactModel({
@@ -210,42 +205,39 @@ const addToConatct = async (fromUserId, toUserId) => {
   const savedConatct = await contactData.save();
 
   return savedConatct._id;
-}
+};
+
 const getConatct = async (fromUserId, toUserId) => {
   const contacts = await ContactModel.findOne({
     fromUserId,
     toUserId,
   });
-  return contacts
-}
+  return contacts;
+};
 // here we need to pass two thing isGroup true/false or profileId :
-//case 1 
-//if isGroup fasle then profileId  will be just userId 
+//case 1
+//if isGroup fasle then profileId  will be just userId
 //case 2:
 //and isGroup is true  then the profileId will be group id
 
 const getContactDetails = async (params) => {
-
   const { profileId, isGroup } = params;
 
   if (!params || !params.profileId || typeof params.profileId !== "string")
     throw Constants.PROFILE_ID_REQUIRED;
 
   if (isGroup) {
-
     const group = await getGroup("_id", profileId);
     if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
-    const groupMembersData = await getGroupMembers('groupId', group._id);
+    const groupMembersData = await getGroupMembers("groupId", group._id);
     return { group, groupMembersData };
-
   } else {
-
     const user = await getUser("_id", profileId);
     if (!user) throw Constants.USER_NOT_FOUND;
     return user;
   }
-}
+};
 
 const removeUserFromGroup = async (params = {}) => {
   const { group_id, toRemove, removedBy } = params;
@@ -260,26 +252,31 @@ const removeUserFromGroup = async (params = {}) => {
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
   const group = await getGroup("_id", group_id);
-  if (!group)
-    throw Constants.GROUP_DOES_NOT_EXISTS;
+  if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
-  const removedByGroupMember = await getGroupMembersByGroupIdAndUser(group_id, removedBy);
-  if (!removedByGroupMember)
-    throw Constants.RECORD_NOT_FOUND;
+  const removedByGroupMember = await getGroupMembersByGroupIdAndUser(
+    group_id,
+    removedBy
+  );
+  if (!removedByGroupMember) throw Constants.RECORD_NOT_FOUND;
 
-  if (removedByGroupMember.isDeleted)
-    throw Constants.USER_NOT_FOUND;
+  if (removedByGroupMember.isDeleted) throw Constants.USER_NOT_FOUND;
 
-  if (!removedByGroupMember.isGroupAdmin)
-    throw Constants.USER_IS_NOT_ADMIN;
+  if (!removedByGroupMember.isGroupAdmin) throw Constants.USER_IS_NOT_ADMIN;
 
   // check admin can not delete superadmin
-  const toRemoveGroupMember = await getGroupMembersByGroupIdAndUser(group_id, toRemove);
-  if (toRemoveGroupMember.addedBy.toString().trim() === toRemoveGroupMember.addedTo.toString().trim()) {
+  const toRemoveGroupMember = await getGroupMembersByGroupIdAndUser(
+    group_id,
+    toRemove
+  );
+  if (
+    toRemoveGroupMember.addedBy.toString().trim() ===
+    toRemoveGroupMember.addedTo.toString().trim()
+  ) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
 
-  // now delete user from group 
+  // now delete user from group
   const memberUpdatedData = await updateGroupMemberDetails({
     id: toRemoveGroupMember._id,
     data: { deletedAt: new Date(), isDeleted: true },
@@ -288,28 +285,30 @@ const removeUserFromGroup = async (params = {}) => {
   if (memberUpdatedData) throw Constants.SOME_THING_WENT_WRONG;
   const removeBy = await getUser("_id", removedBy);
   const toRemoved = await getUser("_id", toRemove);
-  const resData = [{
-    'removedBy': {
-      id: removeBy._id,
-      name: removeBy.name,
-      createdAt: removeBy.createdAt, // You can replace this with the actual timestamp field you need
-      updatedAt: removeBy.updatedAt, // You can replace this with the actual timestamp field you need
+  const resData = [
+    {
+      removedBy: {
+        id: removeBy._id,
+        name: removeBy.name,
+        createdAt: removeBy.createdAt, // You can replace this with the actual timestamp field you need
+        updatedAt: removeBy.updatedAt, // You can replace this with the actual timestamp field you need
+      },
+      toRemoved: {
+        id: toRemoved._id,
+        name: toRemoved.name,
+        updatedAt: toRemoved.updatedAt, // You can replace this with the actual timestamp field you need
+      },
     },
-    'toRemoved': {
-      id: toRemoved._id,
-      name: toRemoved.name,
-      updatedAt: toRemoved.updatedAt, // You can replace this with the actual timestamp field you need
-    },
-  }];
+  ];
   return resData;
-}
+};
 
 const updateGroupMemberDetails = async (params) => {
   const { id, data } = params;
   const result = await GroupMemberModel.updateOne({ _id: id }, data);
   if (result.nModified === 1) return true;
   return false;
-}
+};
 // add member to group
 const addMemberToGroup = async (params = {}) => {
   // validations
@@ -348,12 +347,12 @@ const addMemberToGroup = async (params = {}) => {
     addedBy,
     addedTo,
     groupId,
-    isGroupAdmin: false,
+    isGroupAdmin: addedBy.equals(addedTo) ? true : false,
   });
 
-  const savedGroupMember = groupMemberData.save();
+  const savedGroupMember = await groupMemberData.save();
 
-  return { addUserId: addedTo, groupId, groupMemberId: savedGroupMember._id };
+  return savedGroupMember;
 };
 
 const getContactByFromAndTo = async (fromUserId, toUserId) => {
