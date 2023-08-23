@@ -374,14 +374,20 @@ const exitGroup = async (params = {}) => {
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
   const { userId, groupId } = params;
+ 
   // check if group exists
+  const group = getGroup("_id", groupId);
+  if(!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
   // check if user is not in that group
   const groupMember = await getGroupMembersByGroupIdAndUser(groupId, userId);
 
-  if (!groupMember) throw "not found";
+  if (!groupMember || groupMember.isLeft || groupMember.isDeleted)
+    throw Constants.USER_DOES_NOT_EXIST_IN_GROUP;
 
+  // If user is group admin
   if (groupMember.isGroupAdmin) {
+    // check if another admin exists or not
     const members = GroupMemberModel.find({
       groupId: groupId,
       isGroupAdmin: true,
@@ -391,6 +397,7 @@ const exitGroup = async (params = {}) => {
     });
 
     let newAdmin = {};
+    // if no one is admin then choose a new admin
     if (!members.length) {
       newAdmin = await GroupMemberModel.findOne({
         groupId: groupId,
@@ -398,16 +405,58 @@ const exitGroup = async (params = {}) => {
       });
     }
 
-    if (!newAdmin) throw "you are the only participant";
+    // if user is the only participant
+    if (!newAdmin){
+      groupMember.isLeft = true;
+      const updateData = {
+        isDeleted: true,
+      };
+      await GroupModel.findByIdAndUpdate(groupId, updateData);
+      const savedMember = await groupMember.save();
+      return savedMember;
+    }
 
+    // if new admin exists 
     newAdmin.isGroupAdmin = true;
-    newAdmin.save();
+    await newAdmin.save();
   }
 
-  //await GroupMemberModel.findOneAndDelete({ addedTo: userId, groupId: groupId});
   groupMember.isLeft = true;
-  groupMember.save();
-  return { userId };
+  const savedMember = await groupMember.save();
+  return savedMember;
+};
+
+const toggleAdminStatus = async (params = {}) => {
+
+  const { userId, groupId, adminId } = params;
+
+  if (!Common.isObjectIdValid(groupId)) throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+ 
+  // check if group exists
+  const group = getGroup("_id", groupId);
+  if(!group) throw Constants.GROUP_DOES_NOT_EXISTS;
+
+  // check if user is not in that group
+  const groupMember = await getGroupMembersByGroupIdAndUser(groupId, userId);
+
+  if (!groupMember || groupMember.isLeft || groupMember.isDeleted)
+    throw Constants.USER_DOES_NOT_EXIST_IN_GROUP;
+
+  // check if toggler is valid or not
+  const admin = await getGroupMembersByGroupIdAndUser(groupId, adminId);
+  if(!admin || admin.isLeft || admin.isDeleted || !admin.isGroupAdmin)
+    throw Constants.YOU_ARE_NOT_ADMIN;
+
+  // if toggler is toggling himself
+  if(userId == adminId) throw Constants.YOU_CANNOT_TOGGLE_YOUR_STATUS;
+
+  // if that user is superadmin
+  if(groupMember.addedBy == userId) throw Constants.YOU_CANNOT_TOGGLE_SUPERADMIN;
+
+  //updating status
+  groupMember.isGroupAdmin = groupMember.isGroupAdmin^true;
+  const savedMember = await groupMember.save();
+  return savedMember;
 };
 
 // export
@@ -428,4 +477,5 @@ module.exports = {
   removeUserFromGroup,
   addMemberToGroup,
   getContactByFromAndTo,
+  toggleAdminStatus,
 };

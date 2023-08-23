@@ -181,6 +181,26 @@ const removeUserFromGroup = async (req, res) => {
   }
 };
 
+const toggleAdminStatus = async (req, res) => {
+  try {
+    const { userId, groupId } = req.body;
+    const adminId = req.user._id;
+    // calling service file
+    let data = await userService.toggleAdminStatus({
+      userId,
+      groupId,
+      adminId,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully updated status.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from toggle admin status user controller");
+    return await Output.error(res, e);
+  }
+};
+
 module.exports = {
   getUser,
   getSearchUsers,
@@ -191,4 +211,5 @@ module.exports = {
   getContactDetails,
   removeUserFromGroup,
   addMemberToGroup,
+  toggleAdminStatus,
 };

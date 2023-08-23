@@ -31,5 +31,8 @@ router.delete("/remove-user-from-group", userController.removeUserFromGroup);
 // add participant to group
 router.post("/add-member-to-group", userController.addMemberToGroup);
 
+// toggle admin status in group
+router.post("/toggle-admin-status", userController.toggleAdminStatus);
+
 // exported router
 module.exports = router;

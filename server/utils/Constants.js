@@ -41,4 +41,7 @@ module.exports = {
   IS_GROUP_REQUIRED: "Is group required",
   MESSAGE_DOES_NOT_EXISTS_FOR_USERS: "Message does not exists for these users",
   MESSAGE_ALREADY_DELETED: "Message is already deleted",
+  YOU_ARE_NOT_ADMIN: "You are not admin",
+  YOU_CANNOT_TOGGLE_YOUR_STATUS: "You cannot toggle your status",
+  YOU_CANNOT_TOGGLE_SUPERADMIN: "You cannot toggle superadmin",
 };
