@@ -438,7 +438,7 @@ const toggleAdminStatus = async (params = {}) => {
 
   // check if user is not in that group
   const groupMember = await getGroupMembersByGroupIdAndUser(groupId, userId);
-
+  
   if (!groupMember || groupMember.isLeft || groupMember.isDeleted)
     throw Constants.USER_DOES_NOT_EXIST_IN_GROUP;
 
