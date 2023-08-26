@@ -8,6 +8,7 @@ import {
   TextField,
   Button,
   Box,
+  Divider,
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
@@ -22,77 +23,40 @@ const LoginComponent = () => {
     <>
       <Card>
         <CardContent>
-          <Grid container spacing={2} sx={{ padding: "3rem" }}>
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                align="center"
-                className="text-blue"
-                sx={{ fontWeight: "bold" }}
-              >
-                LOGIN
-              </Typography>
-            </Grid>
-            <Grid item xs={12} mt={4}>
-              <TextField
-                size="small"
-                label="Work Email"
-                variant="outlined"
-                fullWidth
-                value={workEmail}
-                onChange={(e) => setWorkEmail(e.target.value)}
-                error={!!errors.workEmail}
-                helperText={errors.workEmail}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                size="small"
-                label="Password"
-                variant="outlined"
-                type="password"
-                fullWidth
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-            </Grid>
-            <Grid container justifyContent="space-between" mt={1}>
-              <Grid item ml={2}>
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
-              </Grid>
-              <Grid item>
-                <Link to="/reset-password">Forgot password?</Link>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} mt={4}>
-              <Button
-                variant="contained"
-                color="success"
-                sx={{ borderRadius: "2rem" }}
-                fullWidth
-              >
-                Login
-              </Button>
-            </Grid>
+          <Grid container spacing={2} sx={{ padding: "2rem" }}>
+            <Typography
+              variant="h4"
+              className="text-blue"
+              sx={{ fontWeight: "bold", marginX: "auto" }}
+            >
+              LOGIN
+            </Typography>
+            <TextField
+              fullWidth
+              id="outlined-basic"
+              label="Email"
+              variant="outlined"
+              placeholder="Enter your email"
+              sx={{ marginTop: "1rem" }}
+            />
+            <TextField
+              fullWidth
+              id="outlined-basic"
+              label="Password"
+              variant="outlined"
+              placeholder="Enter your password"
+              sx={{ marginTop: "1rem" }}
+            />
+            <Button sx={{ marginTop: "1rem" }} fullWidth variant="contained">
+              Login
+            </Button>
+            <Divider sx={{ width: "100%", marginTop: "2rem" }} />
+            <Typography mt={2} sx={{ marginX: "auto" }}>
+              New at Chatiyaao ? <Link to="/register">Register Account.</Link>
+            </Typography>
           </Grid>
         </CardContent>
       </Card>
-      <Typography mt={2} align="center">
-        New at OpenInterveu ? Register account.
-      </Typography>
-      <Box mt={2} display="flex" justifyContent="center">
-        <Link to="/register">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ borderRadius: "2rem" }}
-          >
-            Register Account
-          </Button>
-        </Link>
-      </Box>
     </>
   );
 };

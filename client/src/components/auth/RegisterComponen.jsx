@@ -60,11 +60,11 @@ const RegisterComponent = () => {
               sx={{ marginTop: "1rem" }}
             />
             <Button sx={{ marginTop: "1rem" }} fullWidth variant="contained">
-              Contained
+              Register
             </Button>
             <Divider sx={{ width: "100%", marginTop: "2rem" }} />
             <Typography mt={2} sx={{ marginX: "auto" }}>
-              New at OpenInterveu ? Register account.
+              Already have a Account ? <Link to="/login">Login here.</Link>
             </Typography>
           </Grid>
         </CardContent>
