@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const deletedSchema = new mongoose.Schema(
+  {
+    fromUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserModel",
+    },
+    deletedAt: {
+      type: Date,
+      default: "",
+    },
+  },
+  { timestamps: true }
+);
+
 // message schema
 const messageSchema = new mongoose.Schema(
   {
@@ -26,10 +40,13 @@ const messageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isDeleted: {
-      type: String,
-      enum: ["ME", "EVERYONE", "NOT_DELETED"],
-      default: "NOT_DELETED",
+    deletedFrom: {
+      type: [deletedSchema],
+      default: [], // Set the default value to an empty array
+    },
+    deleteFromEveryone: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
