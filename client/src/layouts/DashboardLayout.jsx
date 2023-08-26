@@ -92,45 +92,52 @@ const messages = [
   },
 ];
 
-const StyledFab = styled(Fab)({
-  position: "absolute",
-  zIndex: 1,
-  top: -30,
-  left: 0,
-  right: 0,
-  margin: "0 auto",
+const ContentContainer = styled("div")({
+  display: "flex",
+  height: "100vh", // Full viewport height
+  overflow: "hidden", // Hide overflow from the body
 });
 
 const DashboardLayout = ({ children }) => {
   return (
     <div>
       <CssBaseline />
-      <Grid container spacing={0}>
-        {/* Chat Sidebar (4 columns) */}
-        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-          <NavbarComponent />
-          <Paper square sx={{ pb: "50px" }}>
-            <List sx={{ mb: 2 }}>
-              {messages.map(({ id, primary, secondary, person }) => (
-                <React.Fragment key={id}>
-                  <ListItem button>
-                    <ListItemAvatar>
-                      <Avatar alt="Profile Picture" src={person} />
-                    </ListItemAvatar>
-                    <ListItemText primary={primary} secondary={secondary} />
-                  </ListItem>
-                </React.Fragment>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
+      <ContentContainer>
+        <Grid container spacing={0}>
+          {/* Chat Sidebar (4 columns) */}
+          <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+            <NavbarComponent />
+            <Paper
+              square
+              sx={{ pb: "50px" }}
+              style={{ height: "100vh", overflowY: "auto" }}
+            >
+              <List sx={{ mb: 2 }}>
+                {messages.map(({ id, primary, secondary, person }) => (
+                  <React.Fragment key={id}>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar
+                          alt="Profile Picture"
+                          sx={{ backgroundColor: "#1976d2" }}
+                          src={person}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText primary={primary} secondary={secondary} />
+                    </ListItem>
+                  </React.Fragment>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
 
-        {/* Message Content Area (8 columns) */}
-        <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-          <ChatNavbarComponent />
-          {children}
+          {/* Message Content Area (8 columns) */}
+          <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+            <ChatNavbarComponent />
+            {children}
+          </Grid>
         </Grid>
-      </Grid>
+      </ContentContainer>
     </div>
   );
 };
