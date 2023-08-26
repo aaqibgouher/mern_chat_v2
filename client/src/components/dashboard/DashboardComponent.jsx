@@ -1,113 +1,99 @@
 import React, { useState } from "react";
-import {
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Grid,
-  Container,
-  CssBaseline,
-  Box,
-  Avatar,
-  Fab,
-  Badge,
-} from "@mui/material";
+import { TextField, Container, Box, Avatar, Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import registerImage from "../../assets/register.jpg";
 
 const ChatContainer = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
       userName: "AG",
-      message: "Hey",
-      time: "12:13",
+      message: "Hiii",
+      time: "12:20",
     },
     {
-      id: 1,
+      id: 2,
       userName: "SA",
       message: "Hello",
-      time: "12:14",
+      time: "12:21",
     },
     {
-      id: 1,
+      id: 3,
       userName: "AG",
-      message: "How are you?",
-      time: "12:15",
+      message: "Good",
+      time: "12:22",
     },
     {
-      id: 1,
+      id: 4,
       userName: "SA",
-      message: "How are you?",
-      time: "12:15",
+      message: "Yes",
+      time: "12:23",
     },
     {
       id: 1,
       userName: "AG",
-      message: "How are you?",
-      time: "12:15",
+      message: "Hiii",
+      time: "12:20",
     },
     {
-      id: 1,
+      id: 2,
       userName: "SA",
-      message: "How are you?",
-      time: "12:15",
+      message: "Hello",
+      time: "12:21",
     },
     {
-      id: 1,
+      id: 3,
       userName: "AG",
-      message: "How are you?",
-      time: "12:15",
+      message: "Good",
+      time: "12:22",
     },
     {
-      id: 1,
-      userName: "AG",
-      message: "How are you? I am good, what about you?  how you doing ?",
-      time: "12:15",
+      id: 4,
+      userName: "SA",
+      message: "Yes",
+      time: "12:23",
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
   const [userName, setUserName] = useState("AG");
-  const [message, setMessage] = useState("");
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
-      setMessages([...messages, newMessage]);
-      setNewMessage("");
-    }
-  };
 
   return (
     <>
-      <Container style={{ height: "40rem", overflow: "auto" }}>
+      <Container
+        style={{ height: "40rem", overflow: "auto", marginTop: "1rem" }}
+      >
         <Box>
-          {messages.map((msg, key) => (
-            <div>
-              <div
-                key={key}
-                className={`message-container ${
-                  msg.userName === userName
-                    ? "sent-message"
-                    : "received-message"
-                }`}
-              >
-                <Avatar sx={{ bgcolor: "#1976d2" }}>{msg.userName}</Avatar>
-                <p style={{ margin: "0 5px" }}>{msg.message}</p>
-              </div>
-              <p
-                variant="body2"
-                className={
-                  msg.userName === userName
-                    ? "margin-send-time"
-                    : "margin-receive-time"
-                }
-              >
-                {msg.time}{" "}
-              </p>
+          {messages.length === 0 ? (
+            <div className="no-message-container">
+              <img src={registerImage} alt="No messages" />
             </div>
-          ))}
+          ) : (
+            messages.map((msg, key) => (
+              <div>
+                <div
+                  key={key}
+                  className={`message-container ${
+                    msg.userName === userName
+                      ? "sent-message"
+                      : "received-message"
+                  }`}
+                >
+                  <Avatar sx={{ bgcolor: "#1976d2" }}>{msg.userName}</Avatar>
+                  <p style={{ margin: "0 5px" }}>{msg.message}</p>
+                </div>
+                <p
+                  variant="body2"
+                  className={
+                    msg.userName === userName
+                      ? "margin-send-time"
+                      : "margin-receive-time"
+                  }
+                >
+                  {msg.time}{" "}
+                </p>
+              </div>
+            ))
+          )}
         </Box>
       </Container>
       <Container
@@ -120,7 +106,7 @@ const ChatContainer = () => {
         <TextField
           fullWidth
           id="outlined-basic"
-          label="Type here ..."
+          placeholder="Type here ..."
           variant="outlined"
         />
         <Fab
