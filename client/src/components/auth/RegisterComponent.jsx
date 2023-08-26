@@ -27,7 +27,7 @@ const RegisterComponent = () => {
     <>
       <Card>
         <CardContent>
-          <Grid container spacing={2} sx={{ padding: "2rem" }}>
+          <Grid container sx={{ padding: "2rem" }}>
             <Typography
               variant="h4"
               className="text-blue"
