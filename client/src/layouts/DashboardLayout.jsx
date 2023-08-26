@@ -27,6 +27,7 @@ import SearchIcon from "@mui/icons-material/Mail";
 import MoreIcon from "@mui/icons-material/Mail";
 import SidebarComponent from "../components/helper/SidebarComponent";
 import NavbarComponent from "../components/helper/NavbarComponent";
+import ChatNavbarComponent from "../components/helper/ChatNavbarComponent";
 
 const drawerWidth = 240;
 
@@ -126,9 +127,8 @@ const DashboardLayout = ({ children }) => {
 
         {/* Message Content Area (8 columns) */}
         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-          <div style={{ overflowY: "auto", maxHeight: "100vh" }}>
-            {children}
-          </div>
+          <ChatNavbarComponent />
+          {children}
         </Grid>
       </Grid>
     </div>
