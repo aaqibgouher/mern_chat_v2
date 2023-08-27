@@ -42,7 +42,7 @@ const getGroupMessages = async (req, res) => {
 
 const removeMessage = async (req, res) => {
   try {
-    const { fromUserId, toUserId, messageId, isDeleted, isGroup } = req.body;
+    const { toUserId, messageId, isDeleted, isGroup } = req.body;
 
     // calling service file to delete message
     let data = await messageService.removeMessage({

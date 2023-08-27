@@ -106,6 +106,8 @@ const removeMessage = async (params = {}) => {
   if (!params || !params.toUserId) throw Constants.TO_ID_IS_REQUIRED;
   if (!params || !params.messageId) throw Constants.MESSAGE_ID_REQUIRED;
   if (!params || !params.isDeleted) throw Constants.IS_GROUP_REQUIRED;
+  if (!params || !["ME", "EVERYONE"].includes(params.isDeleted))
+    throw Constants.DELETE_CAN_ONLY_BE_FROM_ME_OR_EVERYONE;
   if (!params || typeof params.isGroup !== "boolean")
     throw Constants.IS_GROUP_REQUIRED;
   if (
@@ -120,7 +122,7 @@ const removeMessage = async (params = {}) => {
   if (isGroup) {
   } else {
     // fetch message by from, to and message id
-    const message = await getSoloMessageByFromAndToAndMessageId(
+    let message = await getSoloMessageByFromAndToAndMessageId(
       fromUserId,
       toUserId,
       messageId
@@ -129,15 +131,27 @@ const removeMessage = async (params = {}) => {
     // if message not exists,
     if (!message) throw Constants.MESSAGE_DOES_NOT_EXISTS_FOR_USERS;
 
-    // if exists, is deleted should be NOT_DELETED
-    if (message.isDeleted !== "NOT_DELETED")
+    // if deleted from everyone
+    if (message.deleteFromEveryone === true)
+      throw Constants.MESSAGE_ALREADY_DELETED_FROM_EVERYONE;
+
+    // if deleted from me
+    if (message.deletedFrom.some((item) => item.fromUserId.equals(fromUserId)))
       throw Constants.MESSAGE_ALREADY_DELETED;
 
-    // delete message
-    message.isDeleted = isDeleted ? isDeleted : "NOT_DELETED";
-    const savedMessage = await message.save();
+    // it is neither deleted from me, nor everyone
+    // if coming isDelete = ME, add my id to deletedFrom, else if isDelete = EVERYONE, then set deleteFromEveryone true
+    let savedDeleteMessage = {};
 
-    return { fromUserId, toUserId, savedMessage };
+    if (isDeleted === "ME") {
+      message.deletedFrom.push({ fromUserId, deletedAt: Date.now() });
+      savedDeleteMessage = await message.save();
+    } else if (isDeleted === "EVERYONE") {
+      message.deleteFromEveryone = true;
+      savedDeleteMessage = await message.save();
+    }
+
+    return savedDeleteMessage;
   }
 };
 

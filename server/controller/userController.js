@@ -83,19 +83,41 @@ const createGroup = async (req, res) => {
   }
 };
 
+const exitGroup = async (req, res) => {
+  try {
+    const { groupId } = req.body;
+    const userId = req.user._id;
+    // calling service file to exit group
+    let data = await userService.exitGroup({
+      userId,
+      groupId,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully exited group.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from exit group users controller");
+    return await Output.error(res, e);
+  }
+};
+
 const addUserInContact = async (req, res) => {
   try {
-
     const fromUserId = req.user._id;
     const toUserId = req.body.to_user_id;
     let data = await userService.addUserInContact({ fromUserId, toUserId });
     // returing success output, message, data
-    return await Output.success(res, "Added User SuccessFully in Contacts", data);
+    return await Output.success(
+      res,
+      "Added User SuccessFully in Contacts",
+      data
+    );
   } catch (e) {
     console.log(e, "from users controller method addUserInContact");
     return await Output.error(res, e);
   }
-}
+};
 // add member to group
 const addMemberToGroup = async (req, res) => {
   try {
@@ -124,11 +146,14 @@ const addMemberToGroup = async (req, res) => {
 
 const getContactDetails = async (req, res) => {
   try {
-
     const { profileId, isGroup } = req.body;
     let data = await userService.getContactDetails({ profileId, isGroup });
     // returing success output, message, data
-    return await Output.success(res, "Added User SuccessFully in Contacts", data);
+    return await Output.success(
+      res,
+      "Added User SuccessFully in Contacts",
+      data
+    );
   } catch (e) {
     // else error
     console.log(e, "from  users controller getContactDetails");
@@ -138,11 +163,14 @@ const getContactDetails = async (req, res) => {
 
 const removeUserFromGroup = async (req, res) => {
   try {
-
     const { group_id, user_id } = req.body;
     const toRemove = user_id;
     const removedBy = req.user._id;
-    let data = await userService.removeUserFromGroup({ group_id, toRemove, removedBy });
+    let data = await userService.removeUserFromGroup({
+      group_id,
+      toRemove,
+      removedBy,
+    });
     // returing success output, message, data
     return await Output.success(res, " User Removed From group", data);
   } catch (e) {
@@ -178,15 +206,36 @@ const sendMessage = async (req, res) => {
   }
 };
 
+const toggleAdminStatus = async (req, res) => {
+  try {
+    const { userId, groupId } = req.body;
+    const adminId = req.user._id;
+    // calling service file
+    let data = await userService.toggleAdminStatus({
+      userId,
+      groupId,
+      adminId,
+    });
+
+    // returing success output, message, data
+    return await Output.success(res, "Successfully updated status.", data);
+  } catch (e) {
+    // else error
+    console.log(e, "from toggle admin status user controller");
+    return await Output.error(res, e);
+  }
+};
 
 module.exports = {
   getUser,
   getSearchUsers,
   getConnectedUsers,
   createGroup,
+  exitGroup,
   addUserInContact,
   getContactDetails,
   removeUserFromGroup,
   addMemberToGroup,
   sendMessage,
+  toggleAdminStatus,
 };
