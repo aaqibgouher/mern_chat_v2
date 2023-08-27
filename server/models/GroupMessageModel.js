@@ -6,7 +6,6 @@ const seenSchema = new mongoose.Schema(
     seenById: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserModel",
-      required: true,
     },
   },
   { timestamps: true }

@@ -4,6 +4,8 @@ const {
   ContactModel,
   GroupModel,
   GroupMemberModel,
+  MessageModel,
+  GroupMessageModel,
 } = require("../models");
 const Constants = require("../utils/Constants");
 const Common = require("../utils/Common");
@@ -267,6 +269,7 @@ const removeUserFromGroup = async (params = {}) => {
     throw Constants.USER_IS_NOT_ADMIN;
 
   // check admin can not delete superadmin
+  console.log(memberToRemove, "memberToRemove");
   if (memberToRemove.addedBy.toString().trim() === memberToRemove.addedTo.toString().trim()) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
@@ -370,6 +373,63 @@ const getContactByFromAndTo = async (fromUserId, toUserId) => {
   return await ContactModel.findOne({ fromUserId, toUserId });
 };
 
+const sendMessage = async (params) => {
+
+  const { fromUserId, toContactId, message, type, isGroup } = params;
+  console.log(typeof isGroup);
+  if (!toContactId || typeof toContactId !== "string") throw Constants.TO_CONTACT_ID_IS_REQUIRED;
+  if (!type) throw Constants.MESSAGE_TYPE_IS_REQUIRED;
+  if (!message) throw Constants.MESSAGE_ID_REQUIRED;
+  if (typeof !isGroup !== 'boolean') throw Constants.IS_GROUP_IS_REQUIRED;
+
+  if (fromUserId == toContactId) throw Constants.YOU_CANNOT_MESSAGE_YOURSELF;
+
+  try {
+    switch (type) {
+      case "text":
+        const insertedMessage = await insertMessage(isGroup, message, type, fromUserId, toContactId);
+        return insertedMessage;
+      default:
+        throw Constants.TYPE_SHOULD_BE_IN_THIS;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const insertMessage = async (isGroup, message, type, fromUserId, toContactId) => {
+  try {
+    if (!isGroup) {
+      const soloMessage = new MessageModel({
+        fromUserId,
+        toUserId: toContactId,
+        message,
+        type,
+        seen: false, // For solo messages, set "seen" as a boolean
+        isDeleted: "NOT_DELETED",
+      });
+      soloMessage.save();
+      return soloMessage._id;
+
+    } else {
+      const groupMessage = new GroupMessageModel({
+        fromUserId,
+        toGroupId: toContactId,
+        message,
+        type,
+        seen: {},
+        isDeleted: "NOT_DELETED",
+      });
+      groupMessage.save();
+      return groupMessage._id;
+    }
+  } catch (error) {
+    console.error("Error inserting message:", error);
+    throw error; // Rethrow the error for handling further up the call stack
+  }
+}
+
+
 // export
 module.exports = {
   getUser,
@@ -387,4 +447,5 @@ module.exports = {
   removeUserFromGroup,
   addMemberToGroup,
   getContactByFromAndTo,
+  sendMessage,
 };

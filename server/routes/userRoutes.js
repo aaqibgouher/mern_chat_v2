@@ -28,5 +28,8 @@ router.delete("/remove-user-from-group", userController.removeUserFromGroup);
 // add participant to group
 router.post("/add-member-to-group", userController.addMemberToGroup);
 
+// send message solo or to group
+router.post("/send-message", userController.sendMessage);
+
 // exported router
 module.exports = router;
