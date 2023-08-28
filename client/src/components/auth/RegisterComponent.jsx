@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
   CardContent,
@@ -12,16 +13,62 @@ import {
   Select,
   MenuItem,
   Divider,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { registerUserAction } from "../../actions/authActions";
 
 const RegisterComponent = () => {
-  const [fullName, setFullName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
-  const [workEmail, setWorkEmail] = useState("");
-  const [role, setRole] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const handleRegister = async (e) => {
+    try {
+      e.preventDefault();
+
+      // Validation checks
+      const errors = {};
+      if (!name) {
+        errors.name = "Name is required";
+      }
+      if (!email) {
+        errors.email = "Email is required";
+      }
+      if (!password) {
+        errors.password = "Password is required";
+      }
+
+      setErrors(errors);
+
+      // If there are errors, update the state and prevent form submission
+      if (Object.keys(errors).length > 0) {
+        return;
+      }
+
+      await dispatch(registerUserAction({ name, email, password }));
+
+      // if successfully registered, redirect to email verification page
+      navigate("/verify-email");
+
+      setErrors({});
+      console.log("Register");
+    } catch (error) {
+      console.log(error, "from handle register");
+    }
+  };
+
+  // Clear specific error when typing in the corresponding field
+  const clearError = (field) => {
+    setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+  };
 
   return (
     <>
@@ -42,6 +89,13 @@ const RegisterComponent = () => {
               variant="outlined"
               placeholder="Enter your name"
               sx={{ marginTop: "2rem" }}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                clearError("name");
+              }}
+              error={!!errors.name}
+              helperText={errors.name}
             />
             <TextField
               fullWidth
@@ -50,16 +104,48 @@ const RegisterComponent = () => {
               variant="outlined"
               placeholder="Enter your email"
               sx={{ marginTop: "1rem" }}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError("email"); // Clear the error message
+              }}
+              error={!!errors.email}
+              helperText={errors.email}
             />
             <TextField
               fullWidth
-              id="outlined-basic"
+              id="outlined-adornment-password"
               label="Password"
               variant="outlined"
               placeholder="Enter your password"
+              type={showPassword ? "text" : "password"} // Toggle between text and password
               sx={{ marginTop: "1rem" }}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearError("password"); // Clear the error message
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.password}
+              helperText={errors.password}
             />
-            <Button sx={{ marginTop: "1rem" }} fullWidth variant="contained">
+            <Button
+              sx={{ marginTop: "1rem" }}
+              fullWidth
+              variant="contained"
+              onClick={handleRegister}
+            >
               Register
             </Button>
             <Divider sx={{ width: "100%", marginTop: "2rem" }} />
