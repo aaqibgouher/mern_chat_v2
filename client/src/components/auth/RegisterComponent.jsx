@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { registerUserAction } from "../../actions/authActions";
+import { registerAction } from "../../actions/authActions";
 
 const RegisterComponent = () => {
   const dispatch = useDispatch();
@@ -53,7 +53,9 @@ const RegisterComponent = () => {
         return;
       }
 
-      await dispatch(registerUserAction({ name, email, password }));
+      let res = await dispatch(registerAction({ name, email, password }));
+
+      if (!res) throw res;
 
       // if successfully registered, redirect to email verification page
       navigate("/verify-email");

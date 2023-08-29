@@ -3,6 +3,11 @@ import { HIDE_SNACKBAR, SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
 const initialState = {
   snackbarMessage: "Hello",
   showSnackbar: true,
+  navbarMenu: [
+    { name: "New group", action: "handleNewGroup" },
+    { name: "Settings", action: "handleSettings" },
+    { name: "Logout", action: "handleLogout" },
+  ],
 };
 
 const helperReducers = (state = initialState, action) => {

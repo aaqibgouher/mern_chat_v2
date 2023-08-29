@@ -1,11 +1,12 @@
 import "./App.css";
+import React, { Fragment } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-// import component
 import DashboardPage from "./pages/DashboardPage";
 import SnackbarComponent from "./components/helper/SnakbarComponent";
 import AuthPage from "./pages/AuthPage";
+import PrivateRoute from "./middlewares/PrivateRoute";
 
 const theme = createTheme({
   palette: {
@@ -21,19 +22,24 @@ const theme = createTheme({
 
 function App() {
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <SnackbarComponent />
-        <Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Fragment>
+          <SnackbarComponent />
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
-            <Route path="/verify-email" element={<AuthPage />} />
+            {/* Protected Route */}
+            <Route exact path="/" element={<PrivateRoute />}>
+              <Route exact path="/" element={<DashboardPage />} />
+            </Route>
+
+            {/* Unprotected Routes */}
+            <Route exact path="/login" element={<AuthPage />} />
+            <Route exact path="/register" element={<AuthPage />} />
+            <Route exact path="/verify-email" element={<AuthPage />} />
           </Routes>
-        </Router>
-      </ThemeProvider>
-    </>
+        </Fragment>
+      </Router>
+    </ThemeProvider>
   );
 }
 

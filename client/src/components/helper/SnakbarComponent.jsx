@@ -1,8 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { hideSnackbar } from "../../actions/helperActions";
-import { Snackbar } from "@mui/material";
+import { Snackbar, useTheme } from "@mui/material";
 
 const SnackbarComponent = () => {
+  const theme = useTheme();
+
   let open = useSelector((state) => state.helperReducers.showSnackbar);
   let message = useSelector((state) => state.helperReducers.snackbarMessage);
   let dispatch = useDispatch();
@@ -10,15 +12,15 @@ const SnackbarComponent = () => {
   setTimeout(() => {
     dispatch(hideSnackbar());
     console.log("called");
-  }, 3000);
+  }, 5000);
 
   return (
     <>
       <Snackbar
         open={open}
-        autoHideDuration={6000}
         message={message}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        style={{ backgroundColor: theme.palette.primary.main }}
       />
     </>
   );

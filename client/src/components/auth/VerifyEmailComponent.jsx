@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardContent,
@@ -12,12 +13,40 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { verifyEmailAction } from "../../actions/authActions";
 
 const VerifyEmailComponent = () => {
-  const [workEmail, setWorkEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
+  const [code, setCode] = useState("");
   const [errors, setErrors] = useState({});
+
+  const handleVerifyEmail = async (e) => {
+    try {
+      e.preventDefault();
+
+      // validations
+      // Validation checks
+      const errors = {};
+      if (!code) {
+        errors.code = "Code is required";
+      }
+
+      setErrors(errors);
+
+      // If there are errors, update the state and prevent form submission
+      if (Object.keys(errors).length > 0) {
+        return;
+      }
+
+      await dispatch(verifyEmailAction({ code }));
+
+      setErrors({});
+      console.log("verified");
+    } catch (error) {
+      console.log(error, "from verify email component");
+    }
+  };
 
   return (
     <>
@@ -34,21 +63,22 @@ const VerifyEmailComponent = () => {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="Email"
+              label="Code"
               variant="outlined"
-              placeholder="Enter your email"
-              sx={{ marginTop: "1rem" }}
+              placeholder="Enter your code"
+              sx={{ marginTop: "2rem" }}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              error={!!errors.code}
+              helperText={errors.code}
             />
-            <TextField
+            <Button
+              sx={{ marginTop: "1rem" }}
               fullWidth
-              id="outlined-basic"
-              label="Password"
-              variant="outlined"
-              placeholder="Enter your password"
-              sx={{ marginTop: "1rem" }}
-            />
-            <Button sx={{ marginTop: "1rem" }} fullWidth variant="contained">
-              Login
+              variant="contained"
+              onClick={handleVerifyEmail}
+            >
+              Verify
             </Button>
             <Divider sx={{ width: "100%", marginTop: "2rem" }} />
             <Typography mt={2} sx={{ marginX: "auto" }}>
