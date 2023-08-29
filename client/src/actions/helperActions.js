@@ -1,4 +1,9 @@
-import { HIDE_SNACKBAR, SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
+import {
+  HIDE_SNACKBAR,
+  HIDE_USER_DETAIL_DRAWER,
+  SHOW_SNACKBAR,
+  SHOW_USER_DETAIL_DRAWER,
+} from "../actionTypes/helperActionTypes";
 
 export const showSnackbar = () => async (dispatch) => {
   try {
@@ -20,3 +25,11 @@ export const hideSnackbar = () => async (dispatch) => {
     console.error("Error from hide snackbar helper actions", error);
   }
 };
+
+export const showUserDetailDrawer = () => ({
+  type: SHOW_USER_DETAIL_DRAWER,
+});
+
+export const hideUserDetailDrawer = () => ({
+  type: HIDE_USER_DETAIL_DRAWER,
+});

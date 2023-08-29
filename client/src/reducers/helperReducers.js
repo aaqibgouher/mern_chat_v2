@@ -1,4 +1,9 @@
-import { HIDE_SNACKBAR, SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
+import {
+  HIDE_SNACKBAR,
+  HIDE_USER_DETAIL_DRAWER,
+  SHOW_SNACKBAR,
+  SHOW_USER_DETAIL_DRAWER,
+} from "../actionTypes/helperActionTypes";
 
 const initialState = {
   snackbarMessage: "Hello",
@@ -8,6 +13,7 @@ const initialState = {
     { name: "Settings", action: "handleSettings" },
     { name: "Logout", action: "handleLogout" },
   ],
+  userDetailDrawer: false,
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -23,6 +29,16 @@ const helperReducers = (state = initialState, action) => {
         ...state,
         snackbarMessage: "",
         showSnackbar: false,
+      };
+    case SHOW_USER_DETAIL_DRAWER:
+      return {
+        ...state,
+        userDetailDrawer: true,
+      };
+    case HIDE_USER_DETAIL_DRAWER:
+      return {
+        ...state,
+        userDetailDrawer: false,
       };
     default:
       return state;

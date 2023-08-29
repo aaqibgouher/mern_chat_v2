@@ -10,6 +10,8 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ProfilePicture from "../../assets/profile2.avif";
 import { logoutAction } from "../../actions/authActions";
+import UserDetailDrawerComponent from "./UserDetailDrawerComponent";
+import { showUserDetailDrawer } from "../../actions/helperActions";
 
 function NavbarComponent() {
   const dispatch = useDispatch();
@@ -51,11 +53,20 @@ function NavbarComponent() {
     else if (action === "handleLogout") await handleLogout();
   };
 
+  const handleUserDetailDrawer = () => {
+    dispatch(showUserDetailDrawer());
+  };
+
   return (
     <AppBar position="sticky">
       <Toolbar>
         {/* Profile Picture */}
-        <Avatar alt="Profile Picture" src={ProfilePicture} />
+        <Avatar
+          alt="Profile Picture"
+          src={ProfilePicture}
+          onClick={handleUserDetailDrawer}
+        />
+        <UserDetailDrawerComponent />
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />

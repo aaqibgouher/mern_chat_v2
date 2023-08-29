@@ -17,65 +17,66 @@ import {
 import NavbarComponent from "../components/helper/NavbarComponent";
 import ChatNavbarComponent from "../components/helper/ChatNavbarComponent";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTheme } from "@mui/material/styles";
 
-const messages = [
+const chats = [
   {
     id: 1,
-    primary: "Brunch this week?",
+    primary: "Rahul",
     secondary: "I'll be in the neighbourhood this week.",
     person: "/static/images/avatar/5.jpg",
   },
   {
     id: 2,
-    primary: "Birthday Gift",
+    primary: "Seema",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/1.jpg",
   },
   {
     id: 3,
-    primary: "Recipe to try",
+    primary: "Riya",
     secondary: "I'll be in the neighbourhood this week.",
     person: "/static/images/avatar/2.jpg",
   },
   {
     id: 4,
-    primary: "Yes!",
+    primary: "Hassen",
     secondary: "I'll be in the neighbourhood this week.",
     person: "/static/images/avatar/3.jpg",
   },
   {
     id: 5,
-    primary: "Doctor's Appointment",
+    primary: "Raju",
     secondary: "I'll be in the neighbourhood this week.",
     person: "/static/images/avatar/4.jpg",
   },
   {
     id: 6,
-    primary: "Discussion",
+    primary: "ALfaaz",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/5.jpg",
   },
   {
     id: 7,
-    primary: "Summer BBQ",
+    primary: "Rahmaan",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/1.jpg",
   },
   {
     id: 8,
-    primary: "Summer BBQ",
+    primary: "Sifat",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/1.jpg",
   },
   {
     id: 9,
-    primary: "Summer BBQ",
+    primary: "Deepak",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/1.jpg",
   },
   {
     id: 10,
-    primary: "Summer BBQ",
+    primary: "Kumar",
     secondary: `I'll be in the neighbourhood this week.`,
     person: "/static/images/avatar/1.jpg",
   },
@@ -100,6 +101,8 @@ const ContentContainer = styled("div")({
 });
 
 const DashboardLayout = ({ children }) => {
+  const theme = useTheme();
+
   return (
     <div>
       <CssBaseline />
@@ -127,13 +130,13 @@ const DashboardLayout = ({ children }) => {
                 sx={{ padding: "1rem" }}
               />
               <List sx={{ mb: 2 }}>
-                {messages.map(({ id, primary, secondary, person }) => (
+                {chats.map(({ id, primary, secondary, person }) => (
                   <React.Fragment key={id}>
                     <ListItemButton>
                       <ListItemAvatar>
                         <Avatar
                           alt="Profile Picture"
-                          sx={{ backgroundColor: "#1976d2" }}
+                          sx={{ backgroundColor: theme.palette.primary.main }}
                           src={person}
                         />
                       </ListItemAvatar>
