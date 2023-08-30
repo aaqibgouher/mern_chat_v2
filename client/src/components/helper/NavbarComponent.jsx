@@ -1,4 +1,6 @@
-import * as React from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -7,23 +9,64 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ProfilePicture from "../../assets/profile2.avif";
+import { logoutAction } from "../../actions/authActions";
+import UserDetailDrawerComponent from "./UserDetailDrawerComponent";
+import { showUserDetailDrawer } from "../../actions/helperActions";
 
 function NavbarComponent() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const navbarMenu = useSelector((state) => state.helperReducers.navbarMenu);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
+  const handleNewGroup = async () => {
+    console.log("handle new group");
+  };
+
+  const handleSettings = async () => {
+    console.log("handle settings");
+  };
+
+  const handleLogout = async () => {
+    console.log("handle logout");
+    try {
+      const res = await dispatch(logoutAction());
+
+      if (!res) throw res;
+
+      // redirecting to login page
+      navigate("/login");
+    } catch (error) {
+      console.log(error, "from handle logout component");
+    }
+  };
+
+  const handleMenuClose = async (action) => {
     setAnchorEl(null);
+    if (action === "handleNewGroup") await handleNewGroup();
+    else if (action === "handleSettings") await handleSettings();
+    else if (action === "handleLogout") await handleLogout();
+  };
+
+  const handleUserDetailDrawer = () => {
+    dispatch(showUserDetailDrawer());
   };
 
   return (
     <AppBar position="sticky">
       <Toolbar>
         {/* Profile Picture */}
-        <Avatar alt="Profile Picture" src={ProfilePicture} />
+        <Avatar
+          alt="Profile Picture"
+          src={ProfilePicture}
+          onClick={handleUserDetailDrawer}
+        />
+        <UserDetailDrawerComponent />
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />
@@ -40,9 +83,11 @@ function NavbarComponent() {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose}>New group</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+          {navbarMenu.map((menu, index) => (
+            <MenuItem key={index} onClick={() => handleMenuClose(menu.action)}>
+              {menu.name}
+            </MenuItem>
+          ))}
         </Menu>
       </Toolbar>
     </AppBar>

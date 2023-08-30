@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { TextField, Container, Box, Avatar, Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import registerImage from "../../assets/register.jpg";
+import { useTheme } from "@mui/material/styles";
 
 const ChatContainer = () => {
+  const theme = useTheme();
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -78,7 +80,11 @@ const ChatContainer = () => {
                       : "received-message"
                   }`}
                 >
-                  <Avatar sx={{ bgcolor: "#1976d2" }}>{msg.userName}</Avatar>
+                  <Avatar
+                    style={{ backgroundColor: theme.palette.primary.main }}
+                  >
+                    {msg.userName}
+                  </Avatar>
                   <p style={{ margin: "0 5px" }}>{msg.message}</p>
                 </div>
                 <p
