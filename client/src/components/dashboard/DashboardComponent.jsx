@@ -3,59 +3,64 @@ import { TextField, Container, Box, Avatar, Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import registerImage from "../../assets/register.jpg";
 import { useTheme } from "@mui/material/styles";
+import LottieAnimationMessageComponent from "../helper/LottieAnimationMessageComponent";
+
+/*
+  [
+    {
+      id: 1,
+      userName: "AG",
+      message: "Hiii",
+      time: "12:20",
+    },
+    {
+      id: 2,
+      userName: "SA",
+      message: "Hello",
+      time: "12:21",
+    },
+    {
+      id: 3,
+      userName: "AG",
+      message: "Good",
+      time: "12:22",
+    },
+    {
+      id: 4,
+      userName: "SA",
+      message: "Yes",
+      time: "12:23",
+    },
+    {
+      id: 1,
+      userName: "AG",
+      message: "Hiii",
+      time: "12:20",
+    },
+    {
+      id: 2,
+      userName: "SA",
+      message: "Hello",
+      time: "12:21",
+    },
+    {
+      id: 3,
+      userName: "AG",
+      message: "Good",
+      time: "12:22",
+    },
+    {
+      id: 4,
+      userName: "SA",
+      message: "Yes",
+      time: "12:23",
+    },
+  ]
+*/
 
 const ChatContainer = () => {
   const theme = useTheme();
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      userName: "AG",
-      message: "Hiii",
-      time: "12:20",
-    },
-    {
-      id: 2,
-      userName: "SA",
-      message: "Hello",
-      time: "12:21",
-    },
-    {
-      id: 3,
-      userName: "AG",
-      message: "Good",
-      time: "12:22",
-    },
-    {
-      id: 4,
-      userName: "SA",
-      message: "Yes",
-      time: "12:23",
-    },
-    {
-      id: 1,
-      userName: "AG",
-      message: "Hiii",
-      time: "12:20",
-    },
-    {
-      id: 2,
-      userName: "SA",
-      message: "Hello",
-      time: "12:21",
-    },
-    {
-      id: 3,
-      userName: "AG",
-      message: "Good",
-      time: "12:22",
-    },
-    {
-      id: 4,
-      userName: "SA",
-      message: "Yes",
-      time: "12:23",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [userName, setUserName] = useState("AG");
 
@@ -71,7 +76,8 @@ const ChatContainer = () => {
         <Box>
           {messages.length === 0 ? (
             <div className="no-message-container">
-              <img src={registerImage} alt="No messages" />
+              {/* <img src={registerImage} alt="No messages" /> */}
+              <LottieAnimationMessageComponent />
             </div>
           ) : (
             messages.map((msg, key) => (
