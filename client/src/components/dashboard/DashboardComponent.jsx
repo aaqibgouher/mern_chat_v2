@@ -62,7 +62,11 @@ const ChatContainer = () => {
   return (
     <>
       <Container
-        style={{ height: "40rem", overflow: "auto", marginTop: "1rem" }}
+        style={{
+          height: "40rem",
+          overflow: "auto",
+          marginTop: "1rem",
+        }}
       >
         <Box>
           {messages.length === 0 ? (

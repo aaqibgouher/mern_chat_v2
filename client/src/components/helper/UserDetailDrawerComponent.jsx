@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Drawer,
   List,
@@ -53,6 +53,7 @@ const UserDetailDrawerComponent = () => {
   const userDetailDrawer = useSelector(
     (state) => state.helperReducers.userDetailDrawer
   );
+  const userDetails = useSelector((state) => state.userReducers.me);
   const dispatch = useDispatch();
 
   const classes = useStyles();
@@ -82,8 +83,14 @@ const UserDetailDrawerComponent = () => {
           <Avatar alt="User Profile" className={classes.avatar}>
             {/* User Profile Picture */}
           </Avatar>
-          <Typography variant="h6">John Doe</Typography>
-          <Typography variant="body2">john.doe@example.com</Typography>
+          <Typography variant="h6">
+            {userDetails && userDetails.name ? userDetails.name : "Name"}
+          </Typography>
+          <Typography variant="body2">
+            {userDetails && userDetails.email
+              ? userDetails.email
+              : "email@gmail.com"}
+          </Typography>
         </div>
         {/* <Divider /> */}
         <List className={classes.userDetails}>
@@ -91,25 +98,47 @@ const UserDetailDrawerComponent = () => {
             <ListItemIcon>
               <PersonIcon />
             </ListItemIcon>
-            <ListItemText primary="Name" secondary="John Doe" />
+            <ListItemText
+              primary="Name"
+              secondary={
+                userDetails && userDetails.name ? userDetails.name : ""
+              }
+            />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <EmailIcon />
             </ListItemIcon>
-            <ListItemText primary="Email" secondary="john.doe@example.com" />
+            <ListItemText
+              primary="Email"
+              secondary={
+                userDetails && userDetails.email ? userDetails.email : ""
+              }
+            />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <PhoneIcon />
             </ListItemIcon>
-            <ListItemText primary="Phone" secondary="+1234567890" />
+            <ListItemText
+              primary="Phone"
+              secondary={
+                userDetails && userDetails.phone
+                  ? userDetails.phone
+                  : "+91 33232****"
+              }
+            />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="Username" secondary="johndoe" />
+            <ListItemText
+              primary="Username"
+              secondary={
+                userDetails && userDetails.userName ? userDetails.userName : ""
+              }
+            />
           </ListItem>
           <ListItem>
             <ListItemIcon>
@@ -117,7 +146,11 @@ const UserDetailDrawerComponent = () => {
             </ListItemIcon>
             <ListItemText
               primary="About"
-              secondary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac suscipit justo."
+              secondary={
+                userDetails && userDetails.about
+                  ? userDetails.about
+                  : "Hello there, I am using Chatiaoo !"
+              }
             />
           </ListItem>
         </List>

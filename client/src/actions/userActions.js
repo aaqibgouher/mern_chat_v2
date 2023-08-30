@@ -21,5 +21,7 @@ export const fetchMeAction = () => async (dispatch) => {
       type: SHOW_SNACKBAR,
       payload: error?.data?.message,
     });
+
+    return error.data;
   }
 };
