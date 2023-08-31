@@ -1,6 +1,6 @@
-import { FETCH_CHATS } from "../actionTypes/chatActionTypes";
+import { FETCH_CHATS, FETCH_CONTACTS } from "../actionTypes/chatActionTypes";
 import { SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
-import { fetchChatsApi } from "../api/chatApi";
+import { fetchChatsApi, fetchContactsApi } from "../api/chatApi";
 
 export const fetchChatsAction = () => async (dispatch) => {
   try {

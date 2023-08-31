@@ -14,6 +14,7 @@ const initialState = {
     { name: "Logout", action: "handleLogout" },
   ],
   userDetailDrawer: false,
+  drawerType: null,
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -34,11 +35,13 @@ const helperReducers = (state = initialState, action) => {
       return {
         ...state,
         userDetailDrawer: true,
+        drawerType: action.payload,
       };
     case HIDE_USER_DETAIL_DRAWER:
       return {
         ...state,
         userDetailDrawer: false,
+        drawerType: null,
       };
     default:
       return state;

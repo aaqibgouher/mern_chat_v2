@@ -1,6 +1,6 @@
 import { SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
-import { FETCH_ME } from "../actionTypes/userActionTypes";
-import { fetchMeApi } from "../api/userApi";
+import { FETCH_CONTACTS, FETCH_ME } from "../actionTypes/userActionTypes";
+import { fetchContactsApi, fetchMeApi } from "../api/userApi";
 
 export const fetchMeAction = () => async (dispatch) => {
   try {
@@ -23,5 +23,20 @@ export const fetchMeAction = () => async (dispatch) => {
     });
 
     return error.data;
+  }
+};
+
+export const fetchContactsAction = () => async (dispatch) => {
+  try {
+    const res = await fetchContactsApi();
+    console.log("from actions");
+
+    dispatch({ type: FETCH_CONTACTS, payload: res.data });
+  } catch (error) {
+    console.log(error, "from chat actions -> fetch contacts action");
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: error?.data?.message,
+    });
   }
 };

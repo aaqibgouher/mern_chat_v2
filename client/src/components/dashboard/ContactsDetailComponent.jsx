@@ -2,45 +2,41 @@ import React, { useEffect, useState } from "react";
 import {
   List,
   ListItemText,
-  Paper,
   ListItemAvatar,
   Avatar,
   ListItemButton,
   TextField,
   InputAdornment,
+  Container,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useTheme } from "@mui/material/styles";
 import { fetchChatsAction } from "../../actions/chatActions";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchContactsAction } from "../../actions/userActions";
 
-const ChatComponent = () => {
+const ContactsDetailComponent = () => {
   const dispatch = useDispatch();
-  const chatsState = useSelector((state) => state.chatReducers.chats);
-
-  const [chats, setChats] = useState([]);
+  const contactsState = useSelector((state) => state.userReducers.contacts);
+  const [contacts, setContacts] = useState([]);
   const theme = useTheme();
 
   useEffect(() => {
-    const getChats = async () => {
-      console.log("calling chat");
-      dispatch(fetchChatsAction());
-      console.log(chatsState, "chats from state");
+    const getContacts = async () => {
+      console.log("calling contacts");
+      dispatch(fetchContactsAction());
+      console.log(contactsState, "chats from state");
     };
 
-    getChats();
+    getContacts();
   }, []);
 
   useEffect(() => {
-    setChats(chatsState);
-  }, [chatsState]);
+    setContacts(contactsState);
+  }, [contactsState]);
 
   return (
-    <Paper
-      square
-      sx={{ pb: "50px" }}
-      style={{ height: "100vh", overflowY: "auto" }}
-    >
+    <>
       <TextField
         fullWidth
         variant="outlined"
@@ -52,45 +48,34 @@ const ChatComponent = () => {
           ),
         }}
         placeholder="Search in your contacts ..."
-        sx={{ padding: "1rem" }}
+        sx={{ padding: "1rem", position: "sticky", top: 0, display: "flex" }}
       />
+
       <List sx={{ mb: 2 }}>
-        {chats.length ? (
-          chats.map((chat, index) => (
+        {contacts.length ? (
+          contacts.map((contact, index) => (
             <React.Fragment key={index}>
               <ListItemButton>
                 <ListItemAvatar>
                   <Avatar
                     alt="Profile Picture"
                     sx={{ backgroundColor: theme.palette.primary.main }}
-                    src={
-                      "isGroup" in chat && !chat.isGroup
-                        ? chat.toUserId.profile
-                        : chat.groupId.profileURL
-                    }
+                    src={contact.profile}
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={
-                    "isGroup" in chat && !chat.isGroup
-                      ? chat.toUserId.name
-                      : chat.groupId.name
-                  }
-                  secondary={
-                    "isGroup" in chat && !chat.isGroup
-                      ? chat.toUserId.about
-                      : chat.groupId.description
-                  }
+                  primary={contact.name}
+                  secondary={contact.about}
                 />
               </ListItemButton>
             </React.Fragment>
           ))
         ) : (
-          <ListItemText primary="No chats" sx={{ marginLeft: "1rem" }} />
+          <ListItemText primary="No contacts" sx={{ marginLeft: "1rem" }} />
         )}
       </List>
-    </Paper>
+    </>
   );
 };
 
-export default ChatComponent;
+export default ContactsDetailComponent;

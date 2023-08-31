@@ -26,8 +26,9 @@ export const hideSnackbar = () => async (dispatch) => {
   }
 };
 
-export const showUserDetailDrawer = () => ({
+export const showUserDetailDrawer = (drawerType) => ({
   type: SHOW_USER_DETAIL_DRAWER,
+  payload: drawerType,
 });
 
 export const hideUserDetailDrawer = () => ({

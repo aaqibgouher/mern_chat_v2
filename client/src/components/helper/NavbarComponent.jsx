@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ProfilePicture from "../../assets/profile2.avif";
+import ForumIcon from "@mui/icons-material/Forum";
 import { logoutAction } from "../../actions/authActions";
 import UserDetailDrawerComponent from "./UserDetailDrawerComponent";
 import { showUserDetailDrawer } from "../../actions/helperActions";
@@ -53,8 +54,14 @@ function NavbarComponent() {
     else if (action === "handleLogout") await handleLogout();
   };
 
-  const handleUserDetailDrawer = () => {
-    dispatch(showUserDetailDrawer());
+  const handleUserDetailDrawer = (type) => {
+    console.log("type", type);
+    dispatch(showUserDetailDrawer(type));
+  };
+
+  const handleContactOpen = (type) => {
+    console.log("type", type);
+    dispatch(showUserDetailDrawer(type));
   };
 
   return (
@@ -64,12 +71,20 @@ function NavbarComponent() {
         <Avatar
           alt="Profile Picture"
           src={ProfilePicture}
-          onClick={handleUserDetailDrawer}
+          onClick={() => handleUserDetailDrawer("userDetail")}
         />
-        <UserDetailDrawerComponent />
+        {/* <UserDetailDrawerComponent /> */}
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />
+
+        {/* chat icon */}
+        <IconButton
+          color="inherit"
+          onClick={() => handleContactOpen("contactsDetail")}
+        >
+          <ForumIcon />
+        </IconButton>
 
         {/* Three Dots Icon */}
         <IconButton color="inherit" onClick={handleMenuOpen}>
