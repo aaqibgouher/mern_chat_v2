@@ -12,8 +12,11 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import ProfilePicture from "../../assets/profile.avif";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useSelector } from "react-redux";
 
 function NavbarComponent() {
+  const selectedChat = useSelector((state) => state.userReducers.selectedChat);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuOpen = (event) => {
@@ -28,7 +31,14 @@ function NavbarComponent() {
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Avatar alt="Profile Picture" src={ProfilePicture} />
+          <Avatar
+            alt="Profile Picture"
+            src={
+              selectedChat && "isGroup" in selectedChat && !selectedChat.isGroup
+                ? selectedChat.toUserId.profile
+                : selectedChat.groupId.profileURL || ProfilePicture
+            }
+          />
           <Typography
             variant="h6"
             noWrap
@@ -45,7 +55,9 @@ function NavbarComponent() {
               textDecoration: "none",
             }}
           >
-            THE TRIO
+            {selectedChat && "isGroup" in selectedChat && !selectedChat.isGroup
+              ? selectedChat.toUserId.name
+              : selectedChat.groupId.name || "THE TRIO"}
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>

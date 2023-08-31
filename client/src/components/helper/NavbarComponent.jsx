@@ -19,6 +19,7 @@ function NavbarComponent() {
   const navigate = useNavigate();
 
   const navbarMenu = useSelector((state) => state.helperReducers.navbarMenu);
+  const userDetails = useSelector((state) => state.userReducers.me);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
@@ -70,7 +71,11 @@ function NavbarComponent() {
         {/* Profile Picture */}
         <Avatar
           alt="Profile Picture"
-          src={ProfilePicture}
+          src={
+            userDetails && userDetails.profile
+              ? userDetails.profile
+              : ProfilePicture
+          }
           onClick={() => handleUserDetailDrawer("userDetail")}
         />
         {/* <UserDetailDrawerComponent /> */}

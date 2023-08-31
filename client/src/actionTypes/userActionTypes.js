@@ -1,2 +1,3 @@
 export const FETCH_ME = "FETCH_ME";
 export const FETCH_CONTACTS = "FETCH_CONTACTS";
+export const SET_SELECTED_CHAT = "SET_SELECTED_CHAT";

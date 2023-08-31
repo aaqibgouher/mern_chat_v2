@@ -13,6 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useTheme } from "@mui/material/styles";
 import { fetchChatsAction } from "../../actions/chatActions";
 import { useDispatch, useSelector } from "react-redux";
+import { setSelectedChatAction } from "../../actions/userActions";
 
 const ChatComponent = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,10 @@ const ChatComponent = () => {
 
   const [chats, setChats] = useState([]);
   const theme = useTheme();
+
+  const handleChat = (chat) => {
+    dispatch(setSelectedChatAction(chat));
+  };
 
   useEffect(() => {
     const getChats = async () => {
@@ -58,7 +63,7 @@ const ChatComponent = () => {
         {chats.length ? (
           chats.map((chat, index) => (
             <React.Fragment key={index}>
-              <ListItemButton>
+              <ListItemButton onClick={() => handleChat(chat)}>
                 <ListItemAvatar>
                   <Avatar
                     alt="Profile Picture"

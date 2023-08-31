@@ -23,11 +23,7 @@ const DashboardPage = ({ children }) => {
     fetchMe();
   }, []);
 
-  return (
-    <DashboardLayout>
-      <DashboardComponent />
-    </DashboardLayout>
-  );
+  return <DashboardLayout />;
 };
 
 export default DashboardPage;

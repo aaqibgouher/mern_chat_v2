@@ -19,6 +19,9 @@ import ChatNavbarComponent from "../components/helper/ChatNavbarComponent";
 import SearchIcon from "@mui/icons-material/Search";
 import { useTheme } from "@mui/material/styles";
 import ChatComponent from "../components/dashboard/ChatComponent";
+import DashboardComponent from "../components/dashboard/DashboardComponent";
+import LottieAnimationMessageComponent from "../components/helper/LottieAnimationMessageComponent";
+import { useSelector } from "react-redux";
 
 const chats = [];
 // const chats = [
@@ -102,8 +105,9 @@ const ContentContainer = styled("div")({
   overflow: "hidden", // Hide overflow from the body
 });
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = () => {
   const theme = useTheme();
+  const selectedChat = useSelector((state) => state.userReducers.selectedChat);
 
   return (
     <div>
@@ -118,8 +122,16 @@ const DashboardLayout = ({ children }) => {
 
           {/* Message Content Area (8 columns) */}
           <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-            <ChatNavbarComponent />
-            {children}
+            {selectedChat ? (
+              <>
+                <ChatNavbarComponent />
+                <DashboardComponent />
+              </>
+            ) : (
+              <div className="no-message-container">
+                <LottieAnimationMessageComponent />
+              </div>
+            )}
           </Grid>
         </Grid>
       </ContentContainer>

@@ -1,5 +1,9 @@
 import { SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
-import { FETCH_CONTACTS, FETCH_ME } from "../actionTypes/userActionTypes";
+import {
+  FETCH_CONTACTS,
+  FETCH_ME,
+  SET_SELECTED_CHAT,
+} from "../actionTypes/userActionTypes";
 import { fetchContactsApi, fetchMeApi } from "../api/userApi";
 
 export const fetchMeAction = () => async (dispatch) => {
@@ -40,3 +44,8 @@ export const fetchContactsAction = () => async (dispatch) => {
     });
   }
 };
+
+export const setSelectedChatAction = (payload) => ({
+  type: SET_SELECTED_CHAT,
+  payload: payload,
+});
