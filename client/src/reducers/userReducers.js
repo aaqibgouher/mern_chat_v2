@@ -1,5 +1,6 @@
 import {
   FETCH_CONTACTS,
+  FETCH_CONTACT_DETAIL,
   FETCH_ME,
   SET_SELECTED_CHAT,
 } from "../actionTypes/userActionTypes";
@@ -8,6 +9,7 @@ const userState = {
   me: null,
   contacts: [],
   selectedChat: null,
+  selectedContactDetail: null,
 };
 
 const userReducers = (state = userState, action) => {
@@ -26,6 +28,11 @@ const userReducers = (state = userState, action) => {
       return {
         ...state,
         selectedChat: action.payload,
+      };
+    case FETCH_CONTACT_DETAIL:
+      return {
+        ...state,
+        selectedContactDetail: action.payload,
       };
     default:
       return state;

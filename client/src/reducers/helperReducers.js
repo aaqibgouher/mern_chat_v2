@@ -15,6 +15,16 @@ const initialState = {
   ],
   showDrawer: false,
   drawerType: null,
+  chatNavbarMenuGroup: [
+    { name: "Group info", action: "handleGroupInfo" },
+    { name: "Exit group", action: "handleExitGroup" },
+    { name: "Delete group", action: "handleDeleteGroup" },
+  ],
+  chatNavbarMenuSolo: [
+    { name: "Contact info", action: "handleContactInfo" },
+    { name: "Report", action: "handleReport" },
+    { name: "Block", action: "handleBlock" },
+  ],
 };
 
 const helperReducers = (state = initialState, action) => {

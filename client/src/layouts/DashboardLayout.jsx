@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CssBaseline,
   AppBar,
@@ -21,7 +21,8 @@ import { useTheme } from "@mui/material/styles";
 import ChatComponent from "../components/dashboard/ChatComponent";
 import DashboardComponent from "../components/dashboard/DashboardComponent";
 import LottieAnimationMessageComponent from "../components/helper/LottieAnimationMessageComponent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchContactDetailAction } from "../actions/userActions";
 
 const chats = [];
 // const chats = [
@@ -107,7 +108,15 @@ const ContentContainer = styled("div")({
 
 const DashboardLayout = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.userReducers.selectedChat);
+
+  useEffect(() => {
+    if (selectedChat) {
+      console.log(selectedChat, "called");
+      dispatch(fetchContactDetailAction(selectedChat));
+    }
+  }, [selectedChat]);
 
   return (
     <div>

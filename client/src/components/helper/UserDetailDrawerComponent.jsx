@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideUserDetailDrawer } from "../../actions/helperActions";
 import UserDetailComponent from "../dashboard/UserDetailComponent";
 import ContactsDetailComponent from "../dashboard/ContactsDetailComponent";
+import UserContactDetailComponent from "../dashboard/UserContactDetailComponent";
 
 const useStyles = makeStyles(() => ({
   drawer: {
@@ -53,6 +54,7 @@ const UserDetailDrawerComponent = () => {
         <Divider />
         {drawerType === "userDetail" && <UserDetailComponent />}
         {drawerType === "contactsDetail" && <ContactsDetailComponent />}
+        {drawerType === "userContactDetail" && <UserContactDetailComponent />}
       </Drawer>
     </>
   );

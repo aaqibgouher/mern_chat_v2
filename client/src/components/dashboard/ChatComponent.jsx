@@ -23,7 +23,16 @@ const ChatComponent = () => {
   const theme = useTheme();
 
   const handleChat = (chat) => {
-    dispatch(setSelectedChatAction(chat));
+    console.log(chat, "chat");
+    // check for group or solo chat
+    if ("isGroup" in chat && !chat.isGroup)
+      dispatch(
+        setSelectedChatAction({ profileId: chat.toUserId._id, isGroup: false })
+      );
+    else
+      dispatch(
+        setSelectedChatAction({ profileId: chat.groupId._id, isGroup: true })
+      );
   };
 
   useEffect(() => {
