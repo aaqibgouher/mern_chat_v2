@@ -1,8 +1,8 @@
 import {
+  HIDE_DRAWER,
   HIDE_SNACKBAR,
-  HIDE_USER_DETAIL_DRAWER,
+  SHOW_DRAWER,
   SHOW_SNACKBAR,
-  SHOW_USER_DETAIL_DRAWER,
 } from "../actionTypes/helperActionTypes";
 
 const initialState = {
@@ -13,7 +13,7 @@ const initialState = {
     { name: "Settings", action: "handleSettings" },
     { name: "Logout", action: "handleLogout" },
   ],
-  userDetailDrawer: false,
+  showDrawer: false,
   drawerType: null,
 };
 
@@ -31,16 +31,16 @@ const helperReducers = (state = initialState, action) => {
         snackbarMessage: "",
         showSnackbar: false,
       };
-    case SHOW_USER_DETAIL_DRAWER:
+    case SHOW_DRAWER:
       return {
         ...state,
-        userDetailDrawer: true,
+        showDrawer: true,
         drawerType: action.payload,
       };
-    case HIDE_USER_DETAIL_DRAWER:
+    case HIDE_DRAWER:
       return {
         ...state,
-        userDetailDrawer: false,
+        showDrawer: false,
         drawerType: null,
       };
     default:

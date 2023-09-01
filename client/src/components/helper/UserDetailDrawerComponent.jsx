@@ -24,9 +24,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const UserDetailDrawerComponent = () => {
-  const userDetailDrawer = useSelector(
-    (state) => state.helperReducers.userDetailDrawer
-  );
+  const showDrawer = useSelector((state) => state.helperReducers.showDrawer);
   const drawerType = useSelector((state) => state.helperReducers.drawerType);
   const dispatch = useDispatch();
 
@@ -41,7 +39,7 @@ const UserDetailDrawerComponent = () => {
       <Drawer
         className={classes.drawer}
         anchor="right"
-        open={userDetailDrawer}
+        open={showDrawer}
         classes={{
           paper: classes.drawerPaper,
         }}

@@ -43,11 +43,7 @@ export const verifyEmailApi = async (payload) => {
 
 export const loginApi = async (payload) => {
   try {
-    const res = await apiService.post("/api/auth/login", payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await apiService.post("/api/auth/login", payload);
     console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
