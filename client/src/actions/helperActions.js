@@ -1,8 +1,8 @@
 import {
   HIDE_SNACKBAR,
-  HIDE_USER_DETAIL_DRAWER,
+  HIDE_DRAWER,
+  SHOW_DRAWER,
   SHOW_SNACKBAR,
-  SHOW_USER_DETAIL_DRAWER,
 } from "../actionTypes/helperActionTypes";
 
 export const showSnackbar = () => async (dispatch) => {
@@ -26,10 +26,11 @@ export const hideSnackbar = () => async (dispatch) => {
   }
 };
 
-export const showUserDetailDrawer = () => ({
-  type: SHOW_USER_DETAIL_DRAWER,
+export const showUserDetailDrawer = (drawerType) => ({
+  type: SHOW_DRAWER,
+  payload: drawerType,
 });
 
 export const hideUserDetailDrawer = () => ({
-  type: HIDE_USER_DETAIL_DRAWER,
+  type: HIDE_DRAWER,
 });

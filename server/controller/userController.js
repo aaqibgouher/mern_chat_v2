@@ -149,11 +149,7 @@ const getContactDetails = async (req, res) => {
     const { profileId, isGroup } = req.body;
     let data = await userService.getContactDetails({ profileId, isGroup });
     // returing success output, message, data
-    return await Output.success(
-      res,
-      "Added User SuccessFully in Contacts",
-      data
-    );
+    return await Output.success(res, "Successfully get contact details", data);
   } catch (e) {
     // else error
     console.log(e, "from  users controller getContactDetails");

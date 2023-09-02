@@ -1,8 +1,8 @@
 import React from "react";
 import lottie from "lottie-web";
-import animationData from "../../assets/registerAnimation.json"; // Replace with your file path
+import animationData from "../../assets/messageAnimation.json"; // Replace with your file path
 
-const LottieAnimationAuthComponent = () => {
+const LottieAnimationMessageComponent = () => {
   const containerRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -21,4 +21,4 @@ const LottieAnimationAuthComponent = () => {
   return <div ref={containerRef}></div>;
 };
 
-export default LottieAnimationAuthComponent;
+export default LottieAnimationMessageComponent;

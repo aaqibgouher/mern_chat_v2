@@ -1,19 +1,30 @@
 import {
+  HIDE_DRAWER,
   HIDE_SNACKBAR,
-  HIDE_USER_DETAIL_DRAWER,
+  SHOW_DRAWER,
   SHOW_SNACKBAR,
-  SHOW_USER_DETAIL_DRAWER,
 } from "../actionTypes/helperActionTypes";
 
 const initialState = {
-  snackbarMessage: "Hello",
-  showSnackbar: true,
+  snackbarMessage: "",
+  showSnackbar: false,
   navbarMenu: [
     { name: "New group", action: "handleNewGroup" },
     { name: "Settings", action: "handleSettings" },
     { name: "Logout", action: "handleLogout" },
   ],
-  userDetailDrawer: false,
+  showDrawer: false,
+  drawerType: null,
+  chatNavbarMenuGroup: [
+    { name: "Group info", action: "handleGroupInfo" },
+    { name: "Exit group", action: "handleExitGroup" },
+    { name: "Delete group", action: "handleDeleteGroup" },
+  ],
+  chatNavbarMenuSolo: [
+    { name: "Contact info", action: "handleContactInfo" },
+    { name: "Report", action: "handleReport" },
+    { name: "Block", action: "handleBlock" },
+  ],
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -30,15 +41,17 @@ const helperReducers = (state = initialState, action) => {
         snackbarMessage: "",
         showSnackbar: false,
       };
-    case SHOW_USER_DETAIL_DRAWER:
+    case SHOW_DRAWER:
       return {
         ...state,
-        userDetailDrawer: true,
+        showDrawer: true,
+        drawerType: action.payload,
       };
-    case HIDE_USER_DETAIL_DRAWER:
+    case HIDE_DRAWER:
       return {
         ...state,
-        userDetailDrawer: false,
+        showDrawer: false,
+        drawerType: null,
       };
     default:
       return state;

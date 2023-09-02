@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,28 +12,73 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import ProfilePicture from "../../assets/profile.avif";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { showUserDetailDrawer } from "../../actions/helperActions";
 
 function NavbarComponent() {
+  const dispatch = useDispatch();
+  const selectedChat = useSelector((state) => state.userReducers.selectedChat);
+  const soloMenuNavbarState = useSelector(
+    (state) => state.helperReducers.chatNavbarMenuSolo
+  );
+  const groupMenuNavbarState = useSelector(
+    (state) => state.helperReducers.chatNavbarMenuGroup
+  );
+  const selectedContactDetailState = useSelector(
+    (state) => state.userReducers.selectedContactDetail
+  );
+
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [name, setName] = useState("");
+  const [profile, setProfile] = useState("");
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (action) => {
     setAnchorEl(null);
+    if (action === "handleNewGroup")
+      console.log("need to implement"); // await handleNewGroup();
+    else if (action === "handleSettings")
+      console.log("need to implement"); // await handleSettings();
+    else if (action === "handleLogout") console.log("need to implement"); // await handleLogout();
+    console.log(action, "called");
   };
+
+  const handleDetailOpen = (type) => {
+    console.log("type", type);
+    dispatch(showUserDetailDrawer(type));
+  };
+
+  useEffect(() => {
+    if (selectedContactDetailState) {
+      // means group detail else solo detail
+      if ("group" in selectedContactDetailState) {
+        setName(selectedContactDetailState.group.name || "Group");
+        setProfile(
+          selectedContactDetailState.group.profileURL || ProfilePicture
+        );
+      } else {
+        setName(selectedContactDetailState.name || "Solo");
+        setProfile(selectedContactDetailState.profile || ProfilePicture);
+      }
+    }
+  }, [selectedContactDetailState]);
 
   return (
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Avatar alt="Profile Picture" src={ProfilePicture} />
+          <Avatar
+            alt="Profile Picture"
+            src={profile}
+            onClick={() => handleDetailOpen("userContactDetail")}
+          />
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
             sx={{
               ml: 2,
               mr: 2,
@@ -45,7 +90,7 @@ function NavbarComponent() {
               textDecoration: "none",
             }}
           >
-            THE TRIO
+            {name}
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -92,9 +137,18 @@ function NavbarComponent() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleMenuClose}>Group info</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Exit group</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Delete group</MenuItem>
+            {selectedChat &&
+              ("isGroup" in selectedChat && !selectedChat.isGroup
+                ? soloMenuNavbarState
+                : groupMenuNavbarState
+              ).map((menu, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={() => handleMenuClose(menu.action)}
+                >
+                  {menu.name}
+                </MenuItem>
+              ))}
           </Menu>
         </Toolbar>
       </Container>

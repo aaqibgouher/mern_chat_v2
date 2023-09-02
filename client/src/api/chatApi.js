@@ -4,9 +4,9 @@ const apiService = axios.create({
   baseURL: process.env.API_BASE_URL || "http://localhost:3000",
 });
 
-export const fetchMeApi = async () => {
+export const fetchChatsApi = async () => {
   try {
-    const res = await apiService.get("/api/users/me", {
+    const res = await apiService.get("/api/users/connected", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -18,14 +18,14 @@ export const fetchMeApi = async () => {
 
     return res.data;
   } catch (error) {
-    console.log(error.response, "from fetch me api");
+    console.log(error.response, "from fetch chats api");
     throw error.response;
   }
 };
 
-export const fetchContactsApi = async () => {
+export const fetchMessagesApi = async (payload) => {
   try {
-    const res = await apiService.get("/api/users/search", {
+    const res = await apiService.post("/api/messages/solo", payload, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -37,14 +37,14 @@ export const fetchContactsApi = async () => {
 
     return res.data;
   } catch (error) {
-    console.log(error.response, "from fetch contacts api");
+    console.log(error.response, "from fetch messages api");
     throw error.response;
   }
 };
 
-export const fetchContactDetailApi = async (payload) => {
+export const fetchGroupMessagesApi = async (payload) => {
   try {
-    const res = await apiService.post("/api/users/contact-details", payload, {
+    const res = await apiService.get(`/api/messages/group/${payload}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -56,7 +56,7 @@ export const fetchContactDetailApi = async (payload) => {
 
     return res.data;
   } catch (error) {
-    console.log(error.response, "from fetch contact detail api");
+    console.log(error.response, "from fetch group messages api");
     throw error.response;
   }
 };

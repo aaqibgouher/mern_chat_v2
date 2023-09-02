@@ -23,7 +23,7 @@ router.delete("/exit-group", userController.exitGroup);
 router.post("/add-user-in-contact", userController.addUserInContact);
 
 // get users for profile
-router.get("/Contact-details", userController.getContactDetails);
+router.post("/contact-details", userController.getContactDetails);
 
 // remove group members from group
 router.delete("/remove-user-from-group", userController.removeUserFromGroup);
