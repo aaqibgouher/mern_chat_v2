@@ -6,8 +6,8 @@ import {
 } from "../actionTypes/helperActionTypes";
 
 const initialState = {
-  snackbarMessage: "Hello",
-  showSnackbar: true,
+  snackbarMessage: "",
+  showSnackbar: false,
   navbarMenu: [
     { name: "New group", action: "handleNewGroup" },
     { name: "Settings", action: "handleSettings" },

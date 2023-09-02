@@ -15,10 +15,10 @@ export const fetchMeAction = () => async (dispatch) => {
   try {
     const res = await fetchMeApi();
 
-    dispatch({
-      type: SHOW_SNACKBAR,
-      payload: res.message,
-    });
+    // dispatch({
+    //   type: SHOW_SNACKBAR,
+    //   payload: res.message,
+    // });
 
     dispatch({
       type: FETCH_ME,
@@ -59,10 +59,10 @@ export const fetchContactDetailAction = (payload) => async (dispatch) => {
   try {
     const res = await fetchContactDetailApi(payload);
 
-    dispatch({
-      type: SHOW_SNACKBAR,
-      payload: res.message,
-    });
+    // dispatch({
+    //   type: SHOW_SNACKBAR,
+    //   payload: res.message,
+    // });
 
     dispatch({
       type: FETCH_CONTACT_DETAIL,

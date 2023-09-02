@@ -18,10 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const useStyles = makeStyles(() => ({
   avatar: {
-    width: "200px",
-    height: "200px",
     margin: "0 auto",
-    marginTop: "16px",
   },
   userInfo: {
     textAlign: "center",
@@ -40,7 +37,11 @@ const UserDetailComponent = () => {
   return (
     <>
       <div className={classes.userInfo}>
-        <Avatar alt="User Profile" className={classes.avatar}>
+        <Avatar
+          alt="User Profile"
+          className={classes.avatar}
+          sx={{ width: "10rem", height: "10rem" }}
+        >
           {/* User Profile Picture */}
         </Avatar>
         <Typography variant="h6">
