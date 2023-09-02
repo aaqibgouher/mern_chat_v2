@@ -1,68 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField, Container, Box, Avatar, Fab } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import registerImage from "../../assets/register.jpg";
 import { useTheme } from "@mui/material/styles";
 import LottieAnimationMessageComponent from "../helper/LottieAnimationMessageComponent";
+import { useSelector } from "react-redux";
+import LottieNoMessageAnimationComponent from "../helper/LottieNoMessageAnimationComponent";
 
-/*
-  [
-    {
-      id: 1,
-      userName: "AG",
-      message: "Hiii",
-      time: "12:20",
-    },
-    {
-      id: 2,
-      userName: "SA",
-      message: "Hello",
-      time: "12:21",
-    },
-    {
-      id: 3,
-      userName: "AG",
-      message: "Good",
-      time: "12:22",
-    },
-    {
-      id: 4,
-      userName: "SA",
-      message: "Yes",
-      time: "12:23",
-    },
-    {
-      id: 1,
-      userName: "AG",
-      message: "Hiii",
-      time: "12:20",
-    },
-    {
-      id: 2,
-      userName: "SA",
-      message: "Hello",
-      time: "12:21",
-    },
-    {
-      id: 3,
-      userName: "AG",
-      message: "Good",
-      time: "12:22",
-    },
-    {
-      id: 4,
-      userName: "SA",
-      message: "Yes",
-      time: "12:23",
-    },
-  ]
-*/
-
-const ChatContainer = () => {
+const MessageComponent = () => {
   const theme = useTheme();
+  const messagesState = useSelector((state) => state.chatReducers.messages);
+  const meState = useSelector((state) => state.userReducers.me);
+  const selectedContactDetailState = useSelector(
+    (state) => state.userReducers.selectedContactDetail
+  );
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [userName, setUserName] = useState("AG");
+
+  useEffect(() => {
+    console.log("called use");
+    setMessages([]);
+    if (messagesState.length) {
+      // if group then else solo
+      if ("group" in selectedContactDetailState) {
+        console.log("group message");
+        const formattedMessages = messagesState.map((message) => ({
+          id: message._id,
+          fromUserId: message.fromUserId._id,
+          toUserId: message.toGroupId,
+          message: message.message,
+          fromUserName: message.fromUserId.name.slice(0, 2),
+          time: "12:23",
+        }));
+
+        console.log(formattedMessages, "formatted group");
+        setMessages(formattedMessages);
+      } else {
+        console.log("solo message");
+        const formattedMessages = messagesState.map((message) => ({
+          id: message._id,
+          fromUserId: message.fromUserId._id,
+          toUserId: message.toUserId._id,
+          message: message.message,
+          fromUserName: message.fromUserId.name.slice(0, 2),
+          time: "12:23",
+        }));
+
+        console.log(formattedMessages, "formatted solo");
+        setMessages(formattedMessages);
+      }
+    }
+  }, [messagesState]);
 
   return (
     <>
@@ -76,16 +63,14 @@ const ChatContainer = () => {
         <Box>
           {messages.length === 0 ? (
             <div className="no-message-container">
-              {/* <img src={registerImage} alt="No messages" /> */}
-              <LottieAnimationMessageComponent />
+              <LottieNoMessageAnimationComponent />
             </div>
           ) : (
             messages.map((msg, key) => (
-              <div>
+              <div key={key}>
                 <div
-                  key={key}
                   className={`message-container ${
-                    msg.userName === userName
+                    msg.fromUserId === meState._id
                       ? "sent-message"
                       : "received-message"
                   }`}
@@ -93,14 +78,14 @@ const ChatContainer = () => {
                   <Avatar
                     style={{ backgroundColor: theme.palette.primary.main }}
                   >
-                    {msg.userName}
+                    {msg.fromUserName}
                   </Avatar>
                   <p style={{ margin: "0 5px" }}>{msg.message}</p>
                 </div>
                 <p
                   variant="body2"
                   className={
-                    msg.userName === userName
+                    msg.fromUserId === meState._id
                       ? "margin-send-time"
                       : "margin-receive-time"
                   }
@@ -143,4 +128,4 @@ const ChatContainer = () => {
   );
 };
 
-export default ChatContainer;
+export default MessageComponent;

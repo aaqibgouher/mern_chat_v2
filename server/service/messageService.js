@@ -81,7 +81,7 @@ const getGroupMessages = async (params = {}) => {
   messages = await GroupMessageModel.find({
     toGroupId: groupId,
     isDeleted: "NOT_DELETED",
-  });
+  }).populate("fromUserId", "-password");
 
   return messages;
 };

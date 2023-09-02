@@ -21,13 +21,13 @@ const ContactsDetailComponent = () => {
   const [contacts, setContacts] = useState([]);
   const theme = useTheme();
 
-  useEffect(() => {
-    const getContacts = async () => {
-      console.log("calling contacts");
-      dispatch(fetchContactsAction());
-      console.log(contactsState, "chats from state");
-    };
+  const getContacts = async () => {
+    console.log("calling contacts");
+    await dispatch(fetchContactsAction());
+    console.log(contactsState, "chats from state");
+  };
 
+  useEffect(() => {
     getContacts();
   }, []);
 

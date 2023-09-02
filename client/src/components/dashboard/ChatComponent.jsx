@@ -35,13 +35,13 @@ const ChatComponent = () => {
       );
   };
 
-  useEffect(() => {
-    const getChats = async () => {
-      console.log("calling chat");
-      dispatch(fetchChatsAction());
-      console.log(chatsState, "chats from state");
-    };
+  const getChats = async () => {
+    console.log("calling chat");
+    await dispatch(fetchChatsAction());
+    console.log(chatsState, "chats from state");
+  };
 
+  useEffect(() => {
     getChats();
   }, []);
 

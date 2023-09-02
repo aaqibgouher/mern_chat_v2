@@ -16,13 +16,16 @@ import {
 } from "@mui/material";
 import NavbarComponent from "../components/helper/NavbarComponent";
 import ChatNavbarComponent from "../components/helper/ChatNavbarComponent";
-import SearchIcon from "@mui/icons-material/Search";
 import { useTheme } from "@mui/material/styles";
 import ChatComponent from "../components/dashboard/ChatComponent";
-import DashboardComponent from "../components/dashboard/DashboardComponent";
 import LottieAnimationMessageComponent from "../components/helper/LottieAnimationMessageComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContactDetailAction } from "../actions/userActions";
+import MessageComponent from "../components/dashboard/MessageComponent";
+import {
+  fetchGroupMessagesAction,
+  fetchMessagesAction,
+} from "../actions/chatActions";
 
 const chats = [];
 // const chats = [
@@ -111,10 +114,39 @@ const DashboardLayout = () => {
   const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.userReducers.selectedChat);
 
+  const fetchContactDetail = async () => {
+    try {
+      await dispatch(fetchContactDetailAction(selectedChat));
+    } catch (error) {
+      console.log(error, "from fetch contact detail async");
+    }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      console.log("called fetch msg", selectedChat);
+
+      if (selectedChat.isGroup) {
+        console.log("group called");
+        await dispatch(fetchGroupMessagesAction(selectedChat.profileId));
+      } else {
+        await dispatch(
+          fetchMessagesAction({
+            toUserId: selectedChat.profileId,
+            isGroup: selectedChat.isGroup,
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error, "from fetch message -> dashboard layout");
+    }
+  };
+
   useEffect(() => {
     if (selectedChat) {
       console.log(selectedChat, "called");
-      dispatch(fetchContactDetailAction(selectedChat));
+      fetchContactDetail();
+      fetchMessages();
     }
   }, [selectedChat]);
 
@@ -134,7 +166,7 @@ const DashboardLayout = () => {
             {selectedChat ? (
               <>
                 <ChatNavbarComponent />
-                <DashboardComponent />
+                <MessageComponent />
               </>
             ) : (
               <div className="no-message-container">
