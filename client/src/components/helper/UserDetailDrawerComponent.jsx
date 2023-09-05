@@ -7,6 +7,7 @@ import { hideUserDetailDrawer } from "../../actions/helperActions";
 import UserDetailComponent from "../dashboard/UserDetailComponent";
 import ContactsDetailComponent from "../dashboard/ContactsDetailComponent";
 import UserContactDetailComponent from "../dashboard/UserContactDetailComponent";
+import CreateGroupComponent from "../dashboard/CreateGroupComponent";
 
 const useStyles = makeStyles(() => ({
   drawer: {
@@ -55,6 +56,7 @@ const UserDetailDrawerComponent = () => {
         {drawerType === "userDetail" && <UserDetailComponent />}
         {drawerType === "contactsDetail" && <ContactsDetailComponent />}
         {drawerType === "userContactDetail" && <UserContactDetailComponent />}
+        {drawerType === "createGroup" && <CreateGroupComponent />}
       </Drawer>
     </>
   );

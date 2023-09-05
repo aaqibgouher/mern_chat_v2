@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import DashboardComponent from "../components/dashboard/MessageComponent";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useDispatch } from "react-redux";
-import { fetchMeAction } from "../actions/userActions";
+import { fetchContactsAction, fetchMeAction } from "../actions/userActions";
 import { useNavigate } from "react-router-dom";
 
 const DashboardPage = ({ children }) => {
@@ -19,8 +19,17 @@ const DashboardPage = ({ children }) => {
     }
   };
 
+  const fetchContacts = async () => {
+    try {
+      await dispatch(fetchContactsAction());
+    } catch (error) {
+      console.log(error, "from fetch contacts");
+    }
+  };
+
   useEffect(() => {
     fetchMe();
+    fetchContacts();
   }, []);
 
   return <DashboardLayout />;

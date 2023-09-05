@@ -12,7 +12,7 @@ import ProfilePicture from "../../assets/profile2.avif";
 import ForumIcon from "@mui/icons-material/Forum";
 import { logoutAction } from "../../actions/authActions";
 import UserDetailDrawerComponent from "./UserDetailDrawerComponent";
-import { showUserDetailDrawer } from "../../actions/helperActions";
+import { showDrawer } from "../../actions/helperActions";
 
 function NavbarComponent() {
   const dispatch = useDispatch();
@@ -28,6 +28,7 @@ function NavbarComponent() {
 
   const handleNewGroup = async () => {
     console.log("handle new group");
+    await dispatch(showDrawer("createGroup"));
   };
 
   const handleSettings = async () => {
@@ -57,12 +58,12 @@ function NavbarComponent() {
 
   const handleUserDetailDrawer = (type) => {
     console.log("type", type);
-    dispatch(showUserDetailDrawer(type));
+    dispatch(showDrawer(type));
   };
 
   const handleContactOpen = (type) => {
     console.log("type", type);
-    dispatch(showUserDetailDrawer(type));
+    dispatch(showDrawer(type));
   };
 
   return (

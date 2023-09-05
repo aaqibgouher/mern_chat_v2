@@ -14,7 +14,7 @@ import ProfilePicture from "../../assets/profile.avif";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { showUserDetailDrawer } from "../../actions/helperActions";
+import { showDrawer } from "../../actions/helperActions";
 
 function NavbarComponent() {
   const dispatch = useDispatch();
@@ -49,7 +49,7 @@ function NavbarComponent() {
 
   const handleDetailOpen = (type) => {
     console.log("type", type);
-    dispatch(showUserDetailDrawer(type));
+    dispatch(showDrawer(type));
   };
 
   useEffect(() => {
