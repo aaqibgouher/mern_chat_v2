@@ -114,8 +114,7 @@ const addUserInContact = async (req, res) => {
       data
     );
   } catch (e) {
-    // else error
-    console.log(e, "from get search users controller");
+    console.log(e, "from users controller method addUserInContact");
     return await Output.error(res, e);
   }
 };
@@ -153,7 +152,7 @@ const getContactDetails = async (req, res) => {
     return await Output.success(res, "Successfully get contact details", data);
   } catch (e) {
     // else error
-    console.log(e, "from get search users controller");
+    console.log(e, "from  users controller getContactDetails");
     return await Output.error(res, e);
   }
 };
@@ -172,7 +171,33 @@ const removeUserFromGroup = async (req, res) => {
     return await Output.success(res, " User Removed From group", data);
   } catch (e) {
     // else error
-    console.log(e, "from get search users controller");
+    console.log(e, "from  users controller method removeUserFromGroup");
+    return await Output.error(res, e);
+  }
+};
+
+const sendMessage = async (req, res) => {
+  try {
+    let { isGroup, message, type, toContactId } = req.body;
+    console.log(toContactId, "controllers id ");
+    // calling service file to create group
+    let data = await userService.sendMessage({
+      fromUserId: req.user._id,
+      toContactId,
+      message,
+      type,
+      isGroup,
+    });
+
+    // returing success output, message, data
+    return await Output.success(
+      res,
+      "Successfully added Message.",
+      data
+    );
+  } catch (e) {
+    // else error
+    console.log(e, "from  users controller method sendMessage");
     return await Output.error(res, e);
   }
 };
@@ -207,5 +232,6 @@ module.exports = {
   getContactDetails,
   removeUserFromGroup,
   addMemberToGroup,
+  sendMessage,
   toggleAdminStatus,
 };
