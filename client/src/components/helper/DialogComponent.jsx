@@ -23,13 +23,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import { hideDialog } from "../../actions/helperActions";
 
 const users = [
-  { id: 1, name: "Aaqib" },
-  { id: 2, name: "Ajay" },
-  { id: 3, name: "Gouher" },
-  { id: 4, name: "Nazish" },
-  { id: 5, name: "Danish" },
-  { id: 6, name: "Ashar" },
-  { id: 7, name: "Saqib" },
+  { id: 1, name: "First" },
+  { id: 2, name: "Second" },
+  { id: 3, name: "Third" },
+  { id: 4, name: "Fourth" },
+  { id: 5, name: "Fifth" },
+  { id: 6, name: "Sixth" },
+  { id: 7, name: "Seventh" },
 ];
 
 const DialogComponent = () => {
