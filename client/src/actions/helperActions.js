@@ -3,6 +3,8 @@ import {
   HIDE_DRAWER,
   SHOW_DRAWER,
   SHOW_SNACKBAR,
+  SHOW_DIALOG,
+  HIDE_DIALOG,
 } from "../actionTypes/helperActionTypes";
 
 export const showSnackbar = () => async (dispatch) => {
@@ -33,4 +35,13 @@ export const showDrawer = (drawerType) => ({
 
 export const hideDrawer = () => ({
   type: HIDE_DRAWER,
+});
+
+export const showDialog = (drawerType) => ({
+  type: SHOW_DIALOG,
+  payload: drawerType,
+});
+
+export const hideDialog = () => ({
+  type: HIDE_DIALOG,
 });

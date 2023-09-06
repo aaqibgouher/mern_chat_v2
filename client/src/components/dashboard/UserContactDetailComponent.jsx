@@ -24,7 +24,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { useDispatch, useSelector } from "react-redux";
 import ProfilePicture from "../../assets/profile.avif";
 import { useTheme } from "@mui/material/styles";
-import { showDrawer } from "../../actions/helperActions";
+import { showDialog, showDrawer } from "../../actions/helperActions";
 
 const useStyles = makeStyles(() => ({
   avatar: {
@@ -58,7 +58,7 @@ const UserContactDetailComponent = () => {
 
   const handleAddParticipant = (type) => {
     console.log("type", type);
-    dispatch(showDrawer(type));
+    dispatch(showDialog());
   };
 
   const handleParticipantDetail = (participant, type) => {

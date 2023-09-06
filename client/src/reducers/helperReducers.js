@@ -1,6 +1,8 @@
 import {
+  HIDE_DIALOG,
   HIDE_DRAWER,
   HIDE_SNACKBAR,
+  SHOW_DIALOG,
   SHOW_DRAWER,
   SHOW_SNACKBAR,
 } from "../actionTypes/helperActionTypes";
@@ -25,6 +27,7 @@ const initialState = {
     { name: "Report", action: "handleReport" },
     { name: "Block", action: "handleBlock" },
   ],
+  showDialog: false,
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -52,6 +55,16 @@ const helperReducers = (state = initialState, action) => {
         ...state,
         showDrawer: false,
         drawerType: null,
+      };
+    case SHOW_DIALOG:
+      return {
+        ...state,
+        showDialog: true,
+      };
+    case HIDE_DIALOG:
+      return {
+        ...state,
+        showDialog: false,
       };
     default:
       return state;

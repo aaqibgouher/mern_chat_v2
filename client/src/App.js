@@ -8,6 +8,7 @@ import SnackbarComponent from "./components/helper/SnakbarComponent";
 import AuthPage from "./pages/AuthPage";
 import PrivateRoute from "./middlewares/PrivateRoute";
 import UserDetailDrawerComponent from "./components/helper/UserDetailDrawerComponent";
+import DialogComponent from "./components/helper/DialogComponent";
 
 const theme = createTheme({
   palette: {
@@ -28,6 +29,7 @@ function App() {
         <Fragment>
           <SnackbarComponent />
           <UserDetailDrawerComponent />
+          <DialogComponent />
           <Routes>
             {/* Protected Route */}
             <Route exact path="/" element={<PrivateRoute />}>
