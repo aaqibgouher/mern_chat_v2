@@ -60,3 +60,22 @@ export const fetchGroupMessagesApi = async (payload) => {
     throw error.response;
   }
 };
+
+export const createGroupApi = async (payload) => {
+  try {
+    const res = await apiService.post(`/api/users/create-group`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    console.log(res, "from res");
+
+    if (res.hasOwnProperty("status") && res.status !== 200)
+      throw "Error while calling api";
+
+    return res.data;
+  } catch (error) {
+    console.log(error.response, "from create group api");
+    throw error.response;
+  }
+};

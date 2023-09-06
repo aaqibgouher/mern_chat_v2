@@ -31,6 +31,6 @@ export const showDrawer = (drawerType) => ({
   payload: drawerType,
 });
 
-export const hideUserDetailDrawer = () => ({
+export const hideDrawer = () => ({
   type: HIDE_DRAWER,
 });

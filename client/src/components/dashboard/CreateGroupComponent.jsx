@@ -19,6 +19,10 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import { useDispatch, useSelector } from "react-redux";
+import { createGroupAction, fetchChatsAction } from "../../actions/chatActions";
+import { hideDrawer } from "../../actions/helperActions";
+import { setSelectedChatAction } from "../../actions/userActions";
+import { FETCH_CONTACT_DETAIL } from "../../actionTypes/userActionTypes";
 
 const useStyles = makeStyles(() => ({
   avatar: {
@@ -34,6 +38,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const CreateGroupComponent = () => {
+  const dispatch = useDispatch();
   const contactsState = useSelector((state) => state.userReducers.contacts);
 
   const [name, setName] = useState("");
@@ -43,7 +48,7 @@ const CreateGroupComponent = () => {
   const [errors, setErrors] = useState({});
   const classes = useStyles();
 
-  const handleCreateGrouop = async (e) => {
+  const handleCreateGroup = async (e) => {
     try {
       e.preventDefault();
 
@@ -62,12 +67,42 @@ const CreateGroupComponent = () => {
 
       setErrors(errors);
 
+      console.log(errors, "errors");
+
       // If there are errors, update the state and prevent form submission
       if (Object.keys(errors).length > 0) {
         return;
       }
 
-      console.log("create group");
+      const res = await dispatch(
+        createGroupAction({
+          name,
+          description,
+          members: selectedParticipants.map((participant) => participant._id),
+        })
+      );
+
+      if (!res) throw res;
+
+      // close the drawer
+      await dispatch(hideDrawer());
+
+      // refresh chats list
+      await dispatch(fetchChatsAction());
+
+      // open created group
+      // setting existing selected contact details to null
+      dispatch({
+        type: FETCH_CONTACT_DETAIL,
+        payload: null,
+      });
+
+      // setting new created group detail
+      await dispatch(
+        setSelectedChatAction({ profileId: res.data[0].groupId, isGroup: true })
+      );
+
+      console.log("create group", res);
     } catch (error) {
       console.log(error, "from handle creat group");
     }
@@ -130,7 +165,7 @@ const CreateGroupComponent = () => {
           id="tags-outlined"
           options={contactsState}
           getOptionLabel={(option) => option.name || ""}
-          value={selectedParticipants} // Use state for selected participants
+          value={selectedParticipants}
           onChange={(_, newValue) => {
             setSelectedParticipants(newValue);
             clearError("selectedParticipants");
@@ -141,17 +176,17 @@ const CreateGroupComponent = () => {
             <TextField
               {...params}
               label="Select participants"
-              placeholder="Favorites"
+              placeholder="Participants"
+              error={!!errors.selectedParticipants}
+              helperText={errors.selectedParticipants}
             />
           )}
-          error={!!errors.selectedParticipants}
-          helperText={errors.selectedParticipants}
         />
         <Button
           sx={{ marginTop: "1rem", marginBottom: "1rem" }}
           fullWidth
           variant="contained"
-          onClick={handleCreateGrouop}
+          onClick={handleCreateGroup}
         >
           Create Group
         </Button>

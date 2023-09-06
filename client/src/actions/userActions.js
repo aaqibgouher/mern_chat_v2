@@ -3,6 +3,7 @@ import {
   FETCH_CONTACTS,
   FETCH_CONTACT_DETAIL,
   FETCH_ME,
+  SET_CONTACT_DETAIL,
   SET_SELECTED_CHAT,
 } from "../actionTypes/userActionTypes";
 import {

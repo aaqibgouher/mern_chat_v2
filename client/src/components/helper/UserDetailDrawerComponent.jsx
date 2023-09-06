@@ -3,7 +3,7 @@ import { Drawer, Divider, IconButton } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useDispatch, useSelector } from "react-redux";
-import { hideUserDetailDrawer } from "../../actions/helperActions";
+import { hideDrawer } from "../../actions/helperActions";
 import UserDetailComponent from "../dashboard/UserDetailComponent";
 import ContactsDetailComponent from "../dashboard/ContactsDetailComponent";
 import UserContactDetailComponent from "../dashboard/UserContactDetailComponent";
@@ -33,7 +33,7 @@ const UserDetailDrawerComponent = () => {
   const classes = useStyles();
 
   const handleDrawerClose = () => {
-    dispatch(hideUserDetailDrawer());
+    dispatch(hideDrawer());
   };
 
   return (
