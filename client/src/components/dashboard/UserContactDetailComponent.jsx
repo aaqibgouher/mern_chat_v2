@@ -58,7 +58,7 @@ const UserContactDetailComponent = () => {
 
   const handleAddParticipant = (type) => {
     console.log("type", type);
-    dispatch(showDialog());
+    dispatch(showDialog(type));
   };
 
   const handleParticipantDetail = (participant, type) => {
@@ -145,7 +145,7 @@ const UserContactDetailComponent = () => {
           <List sx={{ mb: 2 }}>
             <React.Fragment>
               <ListItemButton
-                onClick={() => handleAddParticipant("contactsDetail")}
+                onClick={() => handleAddParticipant("addParticipant")}
               >
                 <ListItemAvatar>
                   <Avatar

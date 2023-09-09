@@ -29,14 +29,14 @@ const getSearchUsers = async (req, res) => {
     data = data.filter((user) => !user._id.equals(userId));
 
     // for each users, check connection with logged in user, if connection exists then set new key called isConnected to true, else false
-    for (const dataIndex in data) {
-      const contact = await userService.getContactByFromAndTo(
-        req.user._id,
-        data[dataIndex]._id
-      );
+    // for (const dataIndex in data) {
+    //   const contact = await userService.getContactByFromAndTo(
+    //     req.user._id,
+    //     data[dataIndex]._id
+    //   );
 
-      data[dataIndex].isConnected = contact ? true : false;
-    }
+    //   data[dataIndex].isConnected = contact ? true : false;
+    // }
 
     // returing success output, message, data
     return await Output.success(res, "Successfully get search users.", data);
@@ -190,11 +190,7 @@ const sendMessage = async (req, res) => {
     });
 
     // returing success output, message, data
-    return await Output.success(
-      res,
-      "Successfully added Message.",
-      data
-    );
+    return await Output.success(res, "Successfully added Message.", data);
   } catch (e) {
     // else error
     console.log(e, "from  users controller method sendMessage");

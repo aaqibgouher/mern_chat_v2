@@ -256,7 +256,9 @@ const removeUserFromGroup = async (params = {}) => {
   if (!group) throw Constants.GROUP_DOES_NOT_EXISTS;
 
   const memberToRemove = await GroupMemberModel.findOne({ addedTo: toRemove });
-  const memberIsRemoveBy = await GroupMemberModel.findOne({ addedTo: removedBy });
+  const memberIsRemoveBy = await GroupMemberModel.findOne({
+    addedTo: removedBy,
+  });
 
   if (!memberToRemove || memberToRemove.isDeleted)
     throw Constants.MEMBERS_NOT_FOUND;
@@ -264,12 +266,14 @@ const removeUserFromGroup = async (params = {}) => {
   if (!memberIsRemoveBy || memberIsRemoveBy.isDeleted)
     throw Constants.MEMBERS_NOT_FOUND;
 
-  if (!memberIsRemoveBy.isGroupAdmin)
-    throw Constants.USER_IS_NOT_ADMIN;
+  if (!memberIsRemoveBy.isGroupAdmin) throw Constants.USER_IS_NOT_ADMIN;
 
   // check admin can not delete superadmin
   console.log(memberToRemove, "memberToRemove");
-  if (memberToRemove.addedBy.toString().trim() === memberToRemove.addedTo.toString().trim()) {
+  if (
+    memberToRemove.addedBy.toString().trim() ===
+    memberToRemove.addedTo.toString().trim()
+  ) {
     throw Constants.USER_CANNOT_DELETE_SUPERADMIN;
   }
 
@@ -282,16 +286,18 @@ const removeUserFromGroup = async (params = {}) => {
   if (memberUpdatedData) throw Constants.SOME_THING_WENT_WRONG;
   const removeBy = await getUser("_id", removedBy);
   const toRemoved = await getUser("_id", toRemove);
-  const resData = [{
-    'removedBy': {
-      id: removeBy._id,
-      name: removeBy.name,
+  const resData = [
+    {
+      removedBy: {
+        id: removeBy._id,
+        name: removeBy.name,
+      },
+      toRemoved: {
+        id: toRemoved._id,
+        name: toRemoved.name,
+      },
     },
-    'toRemoved': {
-      id: toRemoved._id,
-      name: toRemoved.name,
-    },
-  }];
+  ];
   return resData;
 };
 
@@ -373,20 +379,26 @@ const getContactByFromAndTo = async (fromUserId, toUserId) => {
 };
 
 const sendMessage = async (params) => {
-
   const { fromUserId, toContactId, message, type, isGroup } = params;
   console.log(typeof isGroup);
-  if (!toContactId || typeof toContactId !== "string") throw Constants.TO_CONTACT_ID_IS_REQUIRED;
+  if (!toContactId || typeof toContactId !== "string")
+    throw Constants.TO_CONTACT_ID_IS_REQUIRED;
   if (!type) throw Constants.MESSAGE_TYPE_IS_REQUIRED;
   if (!message) throw Constants.MESSAGE_ID_REQUIRED;
-  if (typeof !isGroup !== 'boolean') throw Constants.IS_GROUP_IS_REQUIRED;
+  if (typeof !isGroup !== "boolean") throw Constants.IS_GROUP_IS_REQUIRED;
 
   if (fromUserId == toContactId) throw Constants.YOU_CANNOT_MESSAGE_YOURSELF;
 
   try {
     switch (type) {
       case "text":
-        const insertedMessage = await insertMessage(isGroup, message, type, fromUserId, toContactId);
+        const insertedMessage = await insertMessage(
+          isGroup,
+          message,
+          type,
+          fromUserId,
+          toContactId
+        );
         return insertedMessage;
       default:
         throw Constants.TYPE_SHOULD_BE_IN_THIS;
@@ -396,7 +408,13 @@ const sendMessage = async (params) => {
   }
 };
 
-const insertMessage = async (isGroup, message, type, fromUserId, toContactId) => {
+const insertMessage = async (
+  isGroup,
+  message,
+  type,
+  fromUserId,
+  toContactId
+) => {
   try {
     if (!isGroup) {
       const soloMessage = new MessageModel({
@@ -409,7 +427,6 @@ const insertMessage = async (isGroup, message, type, fromUserId, toContactId) =>
       });
       soloMessage.save();
       return soloMessage._id;
-
     } else {
       const groupMessage = new GroupMessageModel({
         fromUserId,
@@ -426,7 +443,7 @@ const insertMessage = async (isGroup, message, type, fromUserId, toContactId) =>
     console.error("Error inserting message:", error);
     throw error; // Rethrow the error for handling further up the call stack
   }
-}
+};
 
 const exitGroup = async (params = {}) => {
   if (!Common.isObjectIdValid(params.groupId))
@@ -475,7 +492,7 @@ const exitGroup = async (params = {}) => {
       return savedMember;
     }
 
-    // if new admin exists 
+    // if new admin exists
     newAdmin.isGroupAdmin = true;
     await newAdmin.save();
   }
@@ -486,10 +503,10 @@ const exitGroup = async (params = {}) => {
 };
 
 const toggleAdminStatus = async (params = {}) => {
-
   const { userId, groupId, adminId } = params;
 
-  if (!Common.isObjectIdValid(groupId)) throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
+  if (!Common.isObjectIdValid(groupId))
+    throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
   // check if group exists
   const group = getGroup("_id", groupId);
@@ -510,7 +527,8 @@ const toggleAdminStatus = async (params = {}) => {
   if (userId == adminId) throw Constants.YOU_CANNOT_TOGGLE_YOUR_STATUS;
 
   // if that user is superadmin
-  if (groupMember.addedBy == userId) throw Constants.YOU_CANNOT_TOGGLE_SUPERADMIN;
+  if (groupMember.addedBy == userId)
+    throw Constants.YOU_CANNOT_TOGGLE_SUPERADMIN;
 
   //updating status
   groupMember.isGroupAdmin = groupMember.isGroupAdmin ^ true;

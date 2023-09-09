@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -21,6 +21,7 @@ import ProfilePicture from "../../assets/profile.avif";
 import { useTheme } from "@emotion/react";
 import CloseIcon from "@mui/icons-material/Close";
 import { hideDialog } from "../../actions/helperActions";
+import AddParticipantListComponent from "../dashboard/AddParticipantListComponent";
 
 const users = [
   { id: 1, name: "First" },
@@ -38,10 +39,9 @@ const DialogComponent = () => {
   const showDialogState = useSelector(
     (state) => state.helperReducers.showDialog
   );
-
-  const addMemberToGroup = async (user) => {
-    console.log(user, "from add member");
-  };
+  const dialogTypeState = useSelector(
+    (state) => state.helperReducers.dialogType
+  );
 
   const closeDialog = async () => {
     dispatch(hideDialog());
@@ -60,32 +60,9 @@ const DialogComponent = () => {
         </div>
       </DialogTitle>
       <DialogContent style={{ maxHeight: "500px", overflowY: "auto" }}>
-        <List>
-          {users.map((user, index) => (
-            <React.Fragment key={index}>
-              <ListItemButton>
-                <ListItemAvatar>
-                  <Avatar
-                    alt="Profile Picture"
-                    sx={{ backgroundColor: theme.palette.primary.main }}
-                    src={ProfilePicture}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={user.name || "Test name"}
-                  secondary="Test about"
-                />
-
-                <Chip
-                  label="Add"
-                  color="success"
-                  variant="outlined"
-                  onClick={() => addMemberToGroup(user)}
-                />
-              </ListItemButton>
-            </React.Fragment>
-          ))}
-        </List>
+        {dialogTypeState === "addParticipant" && (
+          <AddParticipantListComponent />
+        )}
       </DialogContent>
     </Dialog>
   );

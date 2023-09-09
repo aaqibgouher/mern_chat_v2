@@ -28,6 +28,7 @@ const initialState = {
     { name: "Block", action: "handleBlock" },
   ],
   showDialog: false,
+  dialogType: null,
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -60,11 +61,13 @@ const helperReducers = (state = initialState, action) => {
       return {
         ...state,
         showDialog: true,
+        dialogType: action.payload,
       };
     case HIDE_DIALOG:
       return {
         ...state,
         showDialog: false,
+        dialogType: null,
       };
     default:
       return state;

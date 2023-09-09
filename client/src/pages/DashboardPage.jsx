@@ -4,6 +4,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { useDispatch } from "react-redux";
 import { fetchContactsAction, fetchMeAction } from "../actions/userActions";
 import { useNavigate } from "react-router-dom";
+import { showSnackbar } from "../actions/helperActions";
+import { SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
 
 const DashboardPage = ({ children }) => {
   const dispatch = useDispatch();
@@ -12,8 +14,8 @@ const DashboardPage = ({ children }) => {
   const fetchMe = async () => {
     try {
       const res = await dispatch(fetchMeAction());
-      if (res.hasOwnProperty("status") && res.status !== 200)
-        navigate("/verify-email");
+
+      console.log(res, "from res fetch me");
     } catch (error) {
       console.log(error, "from fetch me dashboard page ");
     }

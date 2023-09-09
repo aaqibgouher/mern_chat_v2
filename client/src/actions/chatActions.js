@@ -5,6 +5,7 @@ import {
 } from "../actionTypes/chatActionTypes";
 import { SHOW_SNACKBAR } from "../actionTypes/helperActionTypes";
 import {
+  addParticipantToGroupApi,
   createGroupApi,
   fetchChatsApi,
   fetchContactsApi,
@@ -76,5 +77,21 @@ export const createGroupAction = (payload) => async (dispatch) => {
       type: SHOW_SNACKBAR,
       payload: error?.data?.message,
     });
+  }
+};
+
+export const addParticipantToGroupAction = (payload) => async (dispatch) => {
+  try {
+    const res = await addParticipantToGroupApi(payload);
+
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: res.message,
+    });
+
+    return res;
+  } catch (error) {
+    console.log(error, "from chat actions -> add participant to group action");
+    dispatch({ type: SHOW_SNACKBAR, payload: error?.data?.message });
   }
 };
