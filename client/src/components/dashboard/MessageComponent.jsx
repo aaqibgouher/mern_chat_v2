@@ -4,17 +4,48 @@ import SendIcon from "@mui/icons-material/Send";
 import registerImage from "../../assets/register.jpg";
 import { useTheme } from "@mui/material/styles";
 import LottieAnimationMessageComponent from "../helper/LottieAnimationMessageComponent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LottieNoMessageAnimationComponent from "../helper/LottieNoMessageAnimationComponent";
+import { sendMessageAction } from "../../actions/chatActions";
 
 const MessageComponent = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const messagesState = useSelector((state) => state.chatReducers.messages);
   const meState = useSelector((state) => state.userReducers.me);
   const selectedContactDetailState = useSelector(
     (state) => state.userReducers.selectedContactDetail
   );
+  const selectedChatState = useSelector(
+    (state) => state.userReducers.selectedChat
+  );
   const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const [type, setType] = useState("text");
+
+  const sendMessage = async () => {
+    try {
+      // FOR API
+      console.log(message, type, "message and type");
+      const res = await dispatch(
+        sendMessageAction({
+          toContactId: selectedChatState.profileId || "",
+          message,
+          type,
+          isGroup: selectedChatState.isGroup || false,
+        })
+      );
+
+      if (res && "status" in res && res.status !== 200) throw res;
+
+      console.log(res, "sent");
+      // once send message, reset message and type
+      setMessage("");
+      setType("text");
+    } catch (error) {
+      console.log(error, "from send message component");
+    }
+  };
 
   useEffect(() => {
     console.log("called use");
@@ -109,6 +140,8 @@ const MessageComponent = () => {
           id="outlined-basic"
           placeholder="Type here ..."
           variant="outlined"
+          onChange={(e) => setMessage(e.target.value)}
+          value={message}
         />
         <Fab
           color="primary"
@@ -120,6 +153,7 @@ const MessageComponent = () => {
             margin: "auto",
             marginLeft: "5px",
           }}
+          onClick={sendMessage}
         >
           <SendIcon />
         </Fab>

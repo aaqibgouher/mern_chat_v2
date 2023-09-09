@@ -425,8 +425,8 @@ const insertMessage = async (
         seen: false, // For solo messages, set "seen" as a boolean
         isDeleted: "NOT_DELETED",
       });
-      soloMessage.save();
-      return soloMessage._id;
+      const savedSoloMessage = await soloMessage.save();
+      return savedSoloMessage;
     } else {
       const groupMessage = new GroupMessageModel({
         fromUserId,
@@ -436,8 +436,8 @@ const insertMessage = async (
         seen: {},
         isDeleted: "NOT_DELETED",
       });
-      groupMessage.save();
-      return groupMessage._id;
+      const savedGroupMessage = await groupMessage.save();
+      return savedGroupMessage;
     }
   } catch (error) {
     console.error("Error inserting message:", error);

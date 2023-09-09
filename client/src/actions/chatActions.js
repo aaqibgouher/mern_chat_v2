@@ -11,6 +11,7 @@ import {
   fetchContactsApi,
   fetchGroupMessagesApi,
   fetchMessagesApi,
+  sendMessageApi,
 } from "../api/chatApi";
 
 export const fetchChatsAction = () => async (dispatch) => {
@@ -92,6 +93,17 @@ export const addParticipantToGroupAction = (payload) => async (dispatch) => {
     return res;
   } catch (error) {
     console.log(error, "from chat actions -> add participant to group action");
+    dispatch({ type: SHOW_SNACKBAR, payload: error?.data?.message });
+  }
+};
+
+export const sendMessageAction = (payload) => async (dispatch) => {
+  try {
+    const res = await sendMessageApi(payload);
+
+    return res;
+  } catch (error) {
+    console.log(error, "from chat actions -> send message action");
     dispatch({ type: SHOW_SNACKBAR, payload: error?.data?.message });
   }
 };
