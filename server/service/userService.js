@@ -53,6 +53,31 @@ const getUsers = async (filter = {}) => {
   return await UserModel.find(finalFilter).select("-password");
 };
 
+const getSearchUsers = async (userId) => {
+  console.log(userId, "userId");
+  // get all users
+  let users = await getUsers();
+
+  // filter current users
+  users = users.filter((user) => !user._id.equals(userId));
+
+  // create a new array with modified users
+  const newUsers = await Promise.all(
+    users.map(async (user) => {
+      console.log(user._id);
+      const userContact = await getContactByFromAndTo(userId, user._id);
+
+      // create a new object with isConnected property
+      return {
+        ...user.toObject(), // convert Mongoose document to a plain object
+        isConnected: !!userContact,
+      };
+    })
+  );
+
+  return newUsers;
+};
+
 const getContacts = async (userId, filter = {}) => {
   return await ContactModel.find({ fromUserId: userId })
     .populate("fromUserId", "-password")
@@ -380,7 +405,7 @@ const getContactByFromAndTo = async (fromUserId, toUserId) => {
 
 const sendMessage = async (params) => {
   const { fromUserId, toContactId, message, type, isGroup } = params;
-  console.log(typeof isGroup);
+  console.log(params, "from send message");
   if (!toContactId || typeof toContactId !== "string")
     throw Constants.TO_CONTACT_ID_IS_REQUIRED;
   if (!type) throw Constants.MESSAGE_TYPE_IS_REQUIRED;
@@ -426,7 +451,12 @@ const insertMessage = async (
         isDeleted: "NOT_DELETED",
       });
       const savedSoloMessage = await soloMessage.save();
-      return savedSoloMessage;
+      const populatedMessage = await MessageModel.findById(savedSoloMessage._id)
+        .populate("fromUserId", "-password")
+        .populate("toUserId", "-password")
+        .exec();
+
+      return populatedMessage;
     } else {
       const groupMessage = new GroupMessageModel({
         fromUserId,
@@ -556,4 +586,5 @@ module.exports = {
   getContactByFromAndTo,
   sendMessage,
   toggleAdminStatus,
+  getSearchUsers,
 };

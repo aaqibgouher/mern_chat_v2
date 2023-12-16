@@ -3,6 +3,7 @@ import {
   FETCH_CONTACT_DETAIL,
   FETCH_ME,
   SET_SELECTED_CHAT,
+  SOCKET_IO,
 } from "../actionTypes/userActionTypes";
 
 const userState = {
@@ -10,6 +11,7 @@ const userState = {
   contacts: [],
   selectedChat: null,
   selectedContactDetail: null,
+  socket: null,
 };
 
 const userReducers = (state = userState, action) => {
@@ -33,6 +35,11 @@ const userReducers = (state = userState, action) => {
       return {
         ...state,
         selectedContactDetail: action.payload,
+      };
+    case SOCKET_IO:
+      return {
+        ...state,
+        socket: action.payload,
       };
     default:
       return state;

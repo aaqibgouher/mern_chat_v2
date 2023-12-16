@@ -13,6 +13,14 @@ import ForumIcon from "@mui/icons-material/Forum";
 import { logoutAction } from "../../actions/authActions";
 import UserDetailDrawerComponent from "./UserDetailDrawerComponent";
 import { showDrawer } from "../../actions/helperActions";
+import { REGISTER_USER } from "../../actionTypes/authActionTypes";
+import {
+  FETCH_CONTACTS,
+  FETCH_CONTACT_DETAIL,
+  FETCH_ME,
+  SET_SELECTED_CHAT,
+} from "../../actionTypes/userActionTypes";
+import { FETCH_CHATS, FETCH_MESSAGES } from "../../actionTypes/chatActionTypes";
 
 function NavbarComponent() {
   const dispatch = useDispatch();
@@ -41,6 +49,18 @@ function NavbarComponent() {
       const res = await dispatch(logoutAction());
 
       if (!res) throw res;
+
+      // setting all state values to null
+      // user
+      await dispatch({ type: REGISTER_USER, payload: null });
+      await dispatch({ type: FETCH_ME, payload: null });
+      await dispatch({ type: FETCH_CONTACTS, payload: [] });
+      await dispatch({ type: SET_SELECTED_CHAT, payload: null });
+      await dispatch({ type: FETCH_CONTACT_DETAIL, payload: null });
+
+      // chat
+      await dispatch({ type: FETCH_CHATS, payload: [] });
+      await dispatch({ type: FETCH_MESSAGES, payload: [] });
 
       // redirecting to login page
       navigate("/login");

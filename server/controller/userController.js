@@ -21,22 +21,7 @@ const getUser = async (req, res) => {
 const getSearchUsers = async (req, res) => {
   try {
     // calling service file to get search users
-    let data = await userService.getUsers();
-
-    const userId = new mongoose.Types.ObjectId(req.user._id);
-
-    // Filter out the logged-in user
-    data = data.filter((user) => !user._id.equals(userId));
-
-    // for each users, check connection with logged in user, if connection exists then set new key called isConnected to true, else false
-    // for (const dataIndex in data) {
-    //   const contact = await userService.getContactByFromAndTo(
-    //     req.user._id,
-    //     data[dataIndex]._id
-    //   );
-
-    //   data[dataIndex].isConnected = contact ? true : false;
-    // }
+    const data = await userService.getSearchUsers(req.user._id);
 
     // returing success output, message, data
     return await Output.success(res, "Successfully get search users.", data);

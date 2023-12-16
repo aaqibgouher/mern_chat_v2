@@ -18,6 +18,9 @@ import { setSelectedChatAction } from "../../actions/userActions";
 const ChatComponent = () => {
   const dispatch = useDispatch();
   const chatsState = useSelector((state) => state.chatReducers.chats);
+  const selectedContactDetailState = useSelector(
+    (state) => state.userReducers.selectedContactDetail
+  );
 
   const [chats, setChats] = useState([]);
   const theme = useTheme();

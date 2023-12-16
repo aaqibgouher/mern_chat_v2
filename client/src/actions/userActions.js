@@ -7,6 +7,7 @@ import {
   SET_SELECTED_CHAT,
 } from "../actionTypes/userActionTypes";
 import {
+  addUserInContactApi,
   fetchContactDetailApi,
   fetchContactsApi,
   fetchMeApi,
@@ -77,5 +78,21 @@ export const fetchContactDetailAction = (payload) => async (dispatch) => {
     });
 
     return error.data;
+  }
+};
+
+export const addUserInContactAction = (payload) => async (dispatch) => {
+  try {
+    const res = await addUserInContactApi(payload);
+
+    console.log(res, "from res");
+
+    return res;
+  } catch (error) {
+    console.log(error, "from chat actions -> fetch contacts action");
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: error?.data?.message,
+    });
   }
 };

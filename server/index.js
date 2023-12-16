@@ -3,6 +3,17 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"],
+  },
+});
+const userService = require("./service/userService");
+
 // db configuration
 require("./database/config");
 
@@ -22,8 +33,27 @@ const router = require("./routes");
 // my routes
 app.use("/api/", router);
 
+// socket
+io.on("connection", (socket) => {
+  console.log("Socket initialised");
+
+  //   send message
+  socket.on("send_message", async (payload) => {
+    // call service method, to add message
+    const res = await userService.sendMessage(payload);
+
+    // emit received msg to FE
+    io.emit("receive_message", res);
+  });
+
+  //   disconnect
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected");
+  });
+});
+
 // port
 const PORT = process.env.PORT || 3000;
 
 // listening port
-app.listen(PORT, () => console.log(`Server started at PORT ${PORT}`));
+server.listen(PORT, () => console.log(`Server started at PORT ${PORT}`));
