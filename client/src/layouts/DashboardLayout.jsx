@@ -144,7 +144,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (selectedChat) {
-      console.log(selectedChat, "called");
+      console.log(selectedChat, "called selected");
       fetchContactDetail();
       fetchMessages();
     }

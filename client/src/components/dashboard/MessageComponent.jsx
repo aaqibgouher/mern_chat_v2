@@ -255,7 +255,9 @@ const MessageComponent = () => {
   useEffect(() => {
     const handleReceiveMessage = async (data) => {
       console.log(data, "from socket");
-      setMessages((prev) => [...prev, data]);
+      // setMessages((prev) => [...prev, data]);
+      console.log(messagesState, "from state xxxx");
+      dispatch({ type: FETCH_MESSAGES, payload: [...messagesState, data] });
       setMessage("");
       // await dispatch({
       //   type: FETCH_MESSAGES,
@@ -268,7 +270,7 @@ const MessageComponent = () => {
     return () => {
       socketState.off("receive_message", handleReceiveMessage);
     };
-  }, [socketState]);
+  }, [socketState, dispatch, messagesState]);
 
   return (
     <Container
@@ -298,6 +300,7 @@ const MessageComponent = () => {
         ) : (
           messages.map((msg, key) => (
             <div key={key}>
+              {/* NEW */}
               <Grid
                 container
                 justifyContent={
@@ -329,6 +332,7 @@ const MessageComponent = () => {
                   />
                 </Grid>
               </Grid>
+
               {/* <div
                 className={`message-container ${
                   msg.fromUserId === meState._id
