@@ -4,13 +4,16 @@ const apiService = axios.create({
   baseURL: process.env.API_BASE_URL || "http://localhost:3000",
 });
 
-export const fetchChatsApi = async () => {
+export const fetchChatsApi = async (payload) => {
   try {
-    const res = await apiService.get("/api/users/connected", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const res = await apiService.get(
+      `/api/users/connected?type=${payload?.type}&search=${payload?.search}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)

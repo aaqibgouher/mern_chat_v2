@@ -14,9 +14,9 @@ import {
   sendMessageApi,
 } from "../api/chatApi";
 
-export const fetchChatsAction = () => async (dispatch) => {
+export const fetchChatsAction = (payload) => async (dispatch) => {
   try {
-    const res = await fetchChatsApi();
+    const res = await fetchChatsApi(payload);
     console.log("from actoins");
 
     dispatch({ type: FETCH_CHATS, payload: res.data });

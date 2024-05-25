@@ -1,4 +1,5 @@
 import {
+  ACTIVE_TAB,
   HIDE_DIALOG,
   HIDE_DRAWER,
   HIDE_SNACKBAR,
@@ -29,6 +30,7 @@ const initialState = {
   ],
   showDialog: false,
   dialogType: null,
+  activeTab: "SOLO",
 };
 
 const helperReducers = (state = initialState, action) => {
@@ -68,6 +70,11 @@ const helperReducers = (state = initialState, action) => {
         ...state,
         showDialog: false,
         dialogType: null,
+      };
+    case ACTIVE_TAB:
+      return {
+        ...state,
+        activeTab: action.payload,
       };
     default:
       return state;
