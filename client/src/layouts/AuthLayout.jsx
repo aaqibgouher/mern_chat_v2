@@ -1,8 +1,9 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import LottieAnimationAuthComponent from "../components/helper/LottieAnimationAuthComponent";
+import { Outlet } from "react-router-dom";
 
-const AuthLayout = ({ children }) => {
+const AuthLayout = () => {
   return (
     <Grid container style={{ height: "100vh" }}>
       {/* Left Side (8 columns) */}
@@ -42,7 +43,7 @@ const AuthLayout = ({ children }) => {
           padding: "2rem",
         }}
       >
-        {children}
+        <Outlet />
       </Grid>
     </Grid>
   );
