@@ -80,9 +80,19 @@ const getSearchUsers = async (userId) => {
 };
 
 const getContacts = async (userId, filter = {}) => {
-  // return await ContactModel.find({ fromUserId: userId })
-  //   .populate("fromUserId", "-password")
-  //   .populate("toUserId", "-password");
+  const { search } = filter;
+
+  // Create a search condition
+  let searchCondition = {};
+  if (search) {
+    searchCondition = {
+      $or: [
+        { "toUserId.name": { $regex: search, $options: "i" } },
+        { "toUserId.phone": { $regex: search, $options: "i" } },
+        { "toUserId.email": { $regex: search, $options: "i" } },
+      ],
+    };
+  }
 
   return await ContactModel.aggregate([
     {
@@ -113,6 +123,9 @@ const getContacts = async (userId, filter = {}) => {
       $unwind: "$toUserId",
     },
     {
+      $match: searchCondition,
+    },
+    {
       $project: {
         "fromUserId._id": 1,
         "fromUserId.name": 1,
@@ -130,10 +143,80 @@ const getContacts = async (userId, filter = {}) => {
 };
 
 const getGroupsForContacts = async (userId, filter = {}) => {
-  return await GroupMemberModel.find({ addedTo: userId })
-    .populate("addedBy", "-password")
-    .populate("addedTo", "-password")
-    .populate("groupId");
+  const { search } = filter;
+
+  // Create a search condition
+  let searchCondition = {};
+  if (search) {
+    searchCondition = {
+      $or: [
+        { "groupId.name": { $regex: search, $options: "i" } },
+        { "groupId.description": { $regex: search, $options: "i" } },
+      ],
+    };
+  }
+
+  return await GroupMemberModel.aggregate([
+    {
+      $match: {
+        addedTo: Common.convertToMongoObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "addedBy",
+        foreignField: "_id",
+        as: "addedBy",
+      },
+    },
+    {
+      $unwind: "$addedBy",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "addedTo",
+        foreignField: "_id",
+        as: "addedTo",
+      },
+    },
+    {
+      $unwind: "$addedTo",
+    },
+    {
+      $lookup: {
+        from: "groups",
+        localField: "groupId",
+        foreignField: "_id",
+        as: "groupId",
+      },
+    },
+    {
+      $unwind: "$groupId",
+    },
+    {
+      $match: searchCondition,
+    },
+    {
+      $project: {
+        "addedBy._id": 1,
+        "addedBy.name": 1,
+        "addedBy.profile": 1,
+        "addedBy.about": 1,
+        "addedTo._id": 1,
+        "addedTo.name": 1,
+        "addedTo.profile": 1,
+        "addedTo.about": 1,
+        "groupId._id": 1,
+        "groupId.name": 1,
+        "groupId.profileURL": 1,
+        "groupId.isGroup": 1,
+        "groupId.description": 1,
+        createdAt: 1,
+      },
+    },
+  ]);
 };
 
 const getConnectedUsers = async ({ type, search, userId }) => {
@@ -142,7 +225,7 @@ const getConnectedUsers = async ({ type, search, userId }) => {
   if (type === contactType.SOLO) {
     results = await getContacts(userId, { search });
   } else if (type === contactType.GROUP) {
-    results = await getGroupsForContacts(userId);
+    results = await getGroupsForContacts(userId, { search });
   } else if (type === contactType.STATUS) {
   }
 
