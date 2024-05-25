@@ -4,13 +4,12 @@ const messageService = require("../service/messageService");
 
 const getSoloMessages = async (req, res) => {
   try {
-    const { toUserId, isGroup } = req.body;
+    const { toUserId } = req.body;
 
     // calling service file to get messages
     let data = await messageService.getSoloMessages({
       fromUserId: req.user._id,
       toUserId,
-      isGroup,
     });
 
     // returing success output, message, data

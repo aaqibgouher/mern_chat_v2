@@ -9,6 +9,7 @@ const {
 } = require("../models");
 const Constants = require("../utils/Constants");
 const Common = require("../utils/Common");
+const { contactType } = require("../utils/Enums");
 
 // get user by id (default)
 const getUser = async (column = "_id", value = "", includePassword = false) => {
@@ -79,9 +80,53 @@ const getSearchUsers = async (userId) => {
 };
 
 const getContacts = async (userId, filter = {}) => {
-  return await ContactModel.find({ fromUserId: userId })
-    .populate("fromUserId", "-password")
-    .populate("toUserId", "-password");
+  // return await ContactModel.find({ fromUserId: userId })
+  //   .populate("fromUserId", "-password")
+  //   .populate("toUserId", "-password");
+
+  return await ContactModel.aggregate([
+    {
+      $match: {
+        fromUserId: Common.convertToMongoObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "fromUserId",
+        foreignField: "_id",
+        as: "fromUserId",
+      },
+    },
+    {
+      $unwind: "$fromUserId",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "toUserId",
+        foreignField: "_id",
+        as: "toUserId",
+      },
+    },
+    {
+      $unwind: "$toUserId",
+    },
+    {
+      $project: {
+        "fromUserId._id": 1,
+        "fromUserId.name": 1,
+        "fromUserId.profile": 1,
+        "fromUserId.about": 1,
+        "toUserId._id": 1,
+        "toUserId.name": 1,
+        "toUserId.profile": 1,
+        "toUserId.about": 1,
+        isGroup: 1,
+        createdAt: 1,
+      },
+    },
+  ]);
 };
 
 const getGroupsForContacts = async (userId, filter = {}) => {
@@ -91,11 +136,17 @@ const getGroupsForContacts = async (userId, filter = {}) => {
     .populate("groupId");
 };
 
-const getConnectedUsers = async (userId, filter = {}) => {
-  const solo = await getContacts(userId);
-  const groups = await getGroupsForContacts(userId);
+const getConnectedUsers = async ({ type, search, userId }) => {
+  let results = [];
 
-  return [...solo, ...groups];
+  if (type === contactType.SOLO) {
+    results = await getContacts(userId, { search });
+  } else if (type === contactType.GROUP) {
+    results = await getGroupsForContacts(userId);
+  } else if (type === contactType.STATUS) {
+  }
+
+  return results;
 };
 
 const getGroups = async (column = "_id", value = "") => {

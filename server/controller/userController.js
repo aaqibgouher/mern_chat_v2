@@ -34,8 +34,14 @@ const getSearchUsers = async (req, res) => {
 
 const getConnectedUsers = async (req, res) => {
   try {
+    const { type, search } = req.query;
+
     // calling service file to get connected users
-    let data = await userService.getConnectedUsers(req.user._id);
+    let data = await userService.getConnectedUsers({
+      type,
+      search,
+      userId: req.user._id,
+    });
 
     // returing success output, message, data
     return await Output.success(res, "Successfully get connected users.", data);

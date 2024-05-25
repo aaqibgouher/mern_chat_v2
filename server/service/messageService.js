@@ -8,8 +8,6 @@ const userService = require("./userService");
 const getSoloMessages = async (params = {}) => {
   if (!params || !params.fromUserId) throw Constants.FROM_ID_IS_REQUIRED;
   if (!params || !params.toUserId) throw Constants.TO_ID_IS_REQUIRED;
-  if (!params || typeof params.isGroup !== "boolean")
-    throw Constants.IS_GROUP_REQUIRED;
   if (
     !Common.isObjectIdValid(params.fromUserId) ||
     !Common.isObjectIdValid(params.toUserId)
@@ -21,23 +19,20 @@ const getSoloMessages = async (params = {}) => {
 
   if (!toUser) throw Constants.USER_NOT_FOUND;
 
-  const { fromUserId, toUserId, isGroup } = params;
+  const { fromUserId, toUserId } = params;
   let messages = [];
 
-  // if is group false, then fetch from messages
-  if (isGroup === false) {
-    messages = await MessageModel.find({
-      $or: [
-        { fromUserId: fromUserId, toUserId: toUserId },
-        { fromUserId: toUserId, toUserId: fromUserId },
-      ],
+  messages = await MessageModel.find({
+    $or: [
+      { fromUserId: fromUserId, toUserId: toUserId },
+      { fromUserId: toUserId, toUserId: fromUserId },
+    ],
+  })
+    .sort({
+      createdAt: 1,
     })
-      .sort({
-        createdAt: 1,
-      })
-      .populate("fromUserId", "-password")
-      .populate("toUserId", "-password");
-  }
+    .populate("fromUserId", "-password")
+    .populate("toUserId", "-password");
 
   return messages;
 };
