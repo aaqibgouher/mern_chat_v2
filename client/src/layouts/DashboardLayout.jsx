@@ -21,7 +21,7 @@ import ChatComponent from "../components/dashboard/chats/myChats/ChatComponent";
 import LottieAnimationMessageComponent from "../components/helper/LottieAnimationMessageComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContactDetailAction } from "../actions/userActions";
-import MessageComponent from "../components/dashboard/MessageComponent";
+import MessageComponent from "../components/dashboard/messages/MessageComponent";
 import {
   fetchGroupMessagesAction,
   fetchMessagesAction,
@@ -57,7 +57,6 @@ const DashboardLayout = () => {
         await dispatch(
           fetchMessagesAction({
             toUserId: selectedChat.profileId,
-            isGroup: selectedChat.isGroup,
           })
         );
       }

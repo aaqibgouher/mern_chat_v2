@@ -11,10 +11,11 @@ import {
   Paper,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import LottieNoMessageAnimationComponent from "../helper/LottieNoMessageAnimationComponent";
+import LottieNoMessageAnimationComponent from "../../helper/LottieNoMessageAnimationComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { sendMessageAction } from "../../actions/chatActions";
-import { FETCH_MESSAGES } from "../../actionTypes/chatActionTypes";
+import { sendMessageAction } from "../../../actions/chatActions";
+import { FETCH_MESSAGES } from "../../../actionTypes/chatActionTypes";
+import MessageListComponent from "./MessageListComponent";
 
 const MessageComponent = () => {
   const theme = useTheme();
@@ -31,6 +32,7 @@ const MessageComponent = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [type, setType] = useState("text");
+  const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
     try {
@@ -50,6 +52,7 @@ const MessageComponent = () => {
   useEffect(() => {
     console.log("use called", messagesState);
     setMessages([]);
+    setLoading(true);
     if (messagesState.length) {
       const formattedMessages = messagesState.map((message) => ({
         id: message._id,
@@ -62,7 +65,12 @@ const MessageComponent = () => {
         fromUserName: message.fromUserId.name.slice(0, 2),
         time: "12:23",
       }));
+      console.log(formattedMessages, "formatted ****");
       setMessages(formattedMessages);
+      // show skeleton for 1 sec
+      setTimeout(() => {
+        setLoading(false);
+      }, [1000]);
     }
   }, [messagesState]);
 
@@ -112,42 +120,7 @@ const MessageComponent = () => {
             <LottieNoMessageAnimationComponent />
           </div>
         ) : (
-          messages.map((msg, key) => (
-            <div key={key}>
-              {/* NEW */}
-              <Grid
-                container
-                justifyContent={
-                  msg.fromUserId === meState._id ? "flex-end" : "flex-start"
-                }
-                sx={{
-                  textAlign: msg.fromUserId === meState._id ? "right" : "left",
-                }}
-              >
-                <Grid
-                  item
-                  xs={6}
-                  sx={{ mb: 1, mr: msg.fromUserId === meState._id ? 0 : 2 }}
-                >
-                  <Chip
-                    avatar={
-                      <Avatar
-                        style={{
-                          backgroundColor: theme.palette.primary.main,
-                          color: theme.palette.text.white,
-                        }}
-                      >
-                        {msg.fromUserName}
-                      </Avatar>
-                    }
-                    label={msg.message}
-                    variant="outlined"
-                    size="medium"
-                  />
-                </Grid>
-              </Grid>
-            </div>
-          ))
+          <MessageListComponent messages={messages} loading={loading} />
         )}
       </Box>
       <Container

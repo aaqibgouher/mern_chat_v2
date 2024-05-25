@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import DashboardComponent from "../components/dashboard/MessageComponent";
+import DashboardComponent from "../components/dashboard/messages/MessageComponent";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useDispatch } from "react-redux";
 import { fetchContactsAction, fetchMeAction } from "../actions/userActions";
