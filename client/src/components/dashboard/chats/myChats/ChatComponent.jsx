@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Paper, TextField, InputAdornment } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { Paper, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { fetchChatsAction } from "../../../../actions/chatActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,16 +13,30 @@ const ChatComponent = () => {
   const tabState = useSelector((state) => state.helperReducers.activeTab);
 
   const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   const getChats = async () => {
+    // creating payload
     const payload = {
       type: tabState,
-      search: "",
+      search,
     };
+
+    // show skeleton
+    setLoading(true);
+
+    // call contacts api
     await dispatch(fetchChatsAction(payload));
+
+    // show skeleton for 1 sec
+    setTimeout(() => {
+      setLoading(false);
+    }, [1000]);
   };
 
   useEffect(() => {
+    console.log(search, "search");
     if (tabState) {
       getChats();
     }
@@ -47,19 +61,23 @@ const ChatComponent = () => {
         fullWidth
         variant="outlined"
         InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={getChats}>
+                <SearchIcon />
+              </IconButton>
             </InputAdornment>
           ),
         }}
         placeholder="Search in your contacts ..."
         sx={{ padding: "1rem" }}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
       {/* End: Search */}
 
       {/* Start: Contacts Listing */}
-      <ChatListComponent chats={chats} />
+      <ChatListComponent chats={chats} loading={loading} />
       {/* End: Contacts Listing */}
     </Paper>
   );

@@ -2,11 +2,16 @@ import { List, ListItemText } from "@mui/material";
 import React from "react";
 import ChatListItemComponent from "./ChatListItemComponent";
 
-const ChatListComponent = ({ chats }) => {
+const ChatListComponent = ({ chats, loading }) => {
   return (
     <>
       <List sx={{ mb: 2 }}>
-        {chats.length ? (
+        {loading ? (
+          // Render skeletons while loading
+          Array.from(new Array(5)).map((_, index) => (
+            <ChatListItemComponent loading key={index} />
+          ))
+        ) : chats.length ? (
           chats.map((chat, index) => (
             <ChatListItemComponent chat={chat} key={index} />
           ))
