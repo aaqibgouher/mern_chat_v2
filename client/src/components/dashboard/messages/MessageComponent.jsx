@@ -52,7 +52,7 @@ const MessageComponent = () => {
   useEffect(() => {
     console.log("use called", messagesState);
     setMessages([]);
-    setLoading(true);
+    // setLoading(true);
     if (messagesState.length) {
       const formattedMessages = messagesState.map((message) => ({
         id: message._id,
@@ -68,9 +68,9 @@ const MessageComponent = () => {
       console.log(formattedMessages, "formatted ****");
       setMessages(formattedMessages);
       // show skeleton for 1 sec
-      setTimeout(() => {
-        setLoading(false);
-      }, [1000]);
+      // setTimeout(() => {
+      //   setLoading(false);
+      // }, [1000]);
     }
   }, [messagesState]);
 
@@ -93,6 +93,17 @@ const MessageComponent = () => {
       socketState.off("receive_message", handleReceiveMessage);
     };
   }, [socketState, dispatch, messagesState]);
+
+  useEffect(() => {
+    if (selectedChatState) {
+      setLoading(true);
+
+      // show skeleton for 1 sec
+      setTimeout(() => {
+        setLoading(false);
+      }, [1000]);
+    }
+  }, [selectedChatState]);
 
   return (
     <Container

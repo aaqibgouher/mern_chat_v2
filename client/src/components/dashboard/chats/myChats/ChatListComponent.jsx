@@ -1,8 +1,12 @@
 import { List, ListItemText } from "@mui/material";
 import React from "react";
 import ChatListItemComponent from "./ChatListItemComponent";
+import { useSelector } from "react-redux";
 
 const ChatListComponent = ({ chats, loading }) => {
+  const tabState = useSelector((state) => state.helperReducers.activeTab);
+  console.log(tabState, "tab state");
+
   return (
     <>
       <List sx={{ mb: 2 }}>
@@ -16,7 +20,16 @@ const ChatListComponent = ({ chats, loading }) => {
             <ChatListItemComponent chat={chat} key={index} />
           ))
         ) : (
-          <ListItemText primary="No chats" sx={{ marginLeft: "1rem" }} />
+          <>
+            {tabState ? (
+              <ListItemText
+                primary={`No ${tabState} found`}
+                sx={{ marginLeft: "1rem" }}
+              />
+            ) : (
+              ""
+            )}
+          </>
         )}
       </List>
     </>

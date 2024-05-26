@@ -5,24 +5,27 @@ import {
   ListItemText,
   Skeleton,
 } from "@mui/material";
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChatAction } from "../../../../actions/userActions";
 import { useTheme } from "@mui/material/styles";
 
 const ChatListItemComponent = ({ chat, loading }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
+  const selectedChatState = useSelector(
+    (state) => state.userReducers.selectedChat
+  );
 
   const handleChat = (chat) => {
-    // check for group or solo chat
-    if ("isGroup" in chat && !chat.isGroup)
+    // check for group or solo chat, then update selectedChat state
+    if ("isGroup" in chat && !chat?.isGroup)
       dispatch(
-        setSelectedChatAction({ profileId: chat.toUserId._id, isGroup: false })
+        setSelectedChatAction({ profileId: chat?.toUserId._id, isGroup: false })
       );
     else
       dispatch(
-        setSelectedChatAction({ profileId: chat.groupId._id, isGroup: true })
+        setSelectedChatAction({ profileId: chat?.groupId._id, isGroup: true })
       );
   };
 
@@ -39,7 +42,14 @@ const ChatListItemComponent = ({ chat, loading }) => {
           />
         </ListItemButton>
       ) : (
-        <ListItemButton onClick={() => handleChat(chat)}>
+        <ListItemButton
+          onClick={() => handleChat(chat)}
+          selected={
+            chat?.isGroup
+              ? selectedChatState?.profileId === chat?.groupId?._id
+              : selectedChatState?.profileId === chat?.toUserId?._id
+          }
+        >
           <ListItemAvatar>
             <Avatar
               alt="Profile Picture"
