@@ -22,17 +22,66 @@ const getSoloMessages = async (params = {}) => {
   const { fromUserId, toUserId } = params;
   let messages = [];
 
-  messages = await MessageModel.find({
-    $or: [
-      { fromUserId: fromUserId, toUserId: toUserId },
-      { fromUserId: toUserId, toUserId: fromUserId },
-    ],
-  })
-    .sort({
-      createdAt: 1,
-    })
-    .populate("fromUserId", "-password")
-    .populate("toUserId", "-password");
+  messages = await MessageModel.aggregate([
+    {
+      $match: {
+        $or: [
+          {
+            fromUserId: Common.convertToMongoObjectId(fromUserId),
+            toUserId: Common.convertToMongoObjectId(toUserId),
+          },
+          {
+            fromUserId: Common.convertToMongoObjectId(toUserId),
+            toUserId: Common.convertToMongoObjectId(fromUserId),
+          },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "fromUserId",
+        foreignField: "_id",
+        as: "fromUserId",
+      },
+    },
+    {
+      $unwind: "$fromUserId",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "toUserId",
+        foreignField: "_id",
+        as: "toUserId",
+      },
+    },
+    {
+      $unwind: "$toUserId",
+    },
+    {
+      $sort: { createdAt: 1 },
+    },
+    {
+      $project: {
+        "fromUserId._id": 1,
+        "fromUserId.name": 1,
+        "fromUserId.profile": 1,
+        "fromUserId.about": 1,
+        "toUserId._id": 1,
+        "toUserId.name": 1,
+        "toUserId.profile": 1,
+        "toUserId.about": 1,
+        message: 1,
+        type: 1,
+        seen: 1,
+        deleteFromEveryone: 1,
+        deletedFrom: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ]);
 
   return messages;
 };

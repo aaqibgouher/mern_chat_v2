@@ -178,11 +178,9 @@ const getContacts = async (userId, filter = {}) => {
         "toUserId.about": 1,
         isGroup: 1,
         createdAt: 1,
-        latestMessage: {
-          message: 1,
-          type: 1,
-          createdAt: 1,
-        },
+        "latestMessage.message": 1,
+        "latestMessage.type": 1,
+        "latestMessage.createdAt": 1,
       },
     },
   ]);
@@ -242,7 +240,31 @@ const getGroupsForContacts = async (userId, filter = {}) => {
       $unwind: "$groupId",
     },
     {
-      $match: searchCondition,
+      $lookup: {
+        from: "group_messages",
+        let: { groupId: "$groupId._id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$toGroupId", "$$groupId"],
+              },
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          { $limit: 1 },
+        ],
+        as: "latestMessage",
+      },
+    },
+    {
+      $unwind: {
+        path: "$latestMessage",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $sort: { "latestMessage.createdAt": -1 },
     },
     {
       $addFields: {
@@ -266,6 +288,9 @@ const getGroupsForContacts = async (userId, filter = {}) => {
         "groupId.description": 1,
         isGroup: 1,
         createdAt: 1,
+        "latestMessage.message": 1,
+        "latestMessage.type": 1,
+        "latestMessage.createdAt": 1,
       },
     },
   ]);
@@ -633,9 +658,9 @@ const insertMessage = async (
         toUserId: toContactId,
         message,
         type,
-        seen: false, // For solo messages, set "seen" as a boolean
-        isDeleted: "NOT_DELETED",
+        seen: false,
       });
+
       const savedSoloMessage = await soloMessage.save();
       const populatedMessage = await MessageModel.findById(savedSoloMessage._id)
         .populate("fromUserId", "-password")
