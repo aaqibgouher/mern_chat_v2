@@ -122,6 +122,47 @@ const getContacts = async (userId, filter = {}) => {
     {
       $unwind: "$toUserId",
     },
+
+    {
+      $lookup: {
+        from: "messages",
+        let: { fromUserId: "$fromUserId._id", toUserId: "$toUserId._id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  {
+                    $and: [
+                      { $eq: ["$fromUserId", "$$fromUserId"] },
+                      { $eq: ["$toUserId", "$$toUserId"] },
+                    ],
+                  },
+                  {
+                    $and: [
+                      { $eq: ["$fromUserId", "$$toUserId"] },
+                      { $eq: ["$toUserId", "$$fromUserId"] },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          { $limit: 1 },
+        ],
+        as: "latestMessage",
+      },
+    },
+    {
+      $unwind: {
+        path: "$latestMessage",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $sort: { "latestMessage.createdAt": -1 },
+    },
     {
       $match: searchCondition,
     },
@@ -137,6 +178,11 @@ const getContacts = async (userId, filter = {}) => {
         "toUserId.about": 1,
         isGroup: 1,
         createdAt: 1,
+        latestMessage: {
+          message: 1,
+          type: 1,
+          createdAt: 1,
+        },
       },
     },
   ]);
@@ -199,6 +245,11 @@ const getGroupsForContacts = async (userId, filter = {}) => {
       $match: searchCondition,
     },
     {
+      $addFields: {
+        isGroup: true,
+      },
+    },
+    {
       $project: {
         "addedBy._id": 1,
         "addedBy.name": 1,
@@ -213,6 +264,7 @@ const getGroupsForContacts = async (userId, filter = {}) => {
         "groupId.profileURL": 1,
         "groupId.isGroup": 1,
         "groupId.description": 1,
+        isGroup: 1,
         createdAt: 1,
       },
     },
