@@ -47,6 +47,7 @@ const CreateGroupComponent = () => {
   const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [errors, setErrors] = useState({});
   const classes = useStyles();
+  const tabState = useSelector((state) => state.helperReducers.activeTab);
 
   const handleCreateGroup = async (e) => {
     try {
@@ -87,8 +88,15 @@ const CreateGroupComponent = () => {
       // close the drawer
       await dispatch(hideDrawer());
 
+      // Payload for chats
+      // creating payload
+      const payload = {
+        type: tabState,
+        search: "",
+      };
+
       // refresh chats list
-      await dispatch(fetchChatsAction());
+      await dispatch(fetchChatsAction(payload));
 
       // open created group
       // setting existing selected contact details to null

@@ -53,28 +53,25 @@ const MessageComponent = () => {
     console.log("use called", messagesState);
     setMessages([]);
     // setLoading(true);
-    if (messagesState.length) {
+    if (messagesState && messagesState.length) {
       const formattedMessages = messagesState.map((message) => ({
         id: message._id,
-        fromUserId: message.fromUserId._id,
+        fromUserId: message?.fromUserId?._id,
         toUserId:
           "group" in selectedContactDetailState
             ? message.toGroupId
             : message.toUserId._id,
         message: message.message,
-        fromUserName: message.fromUserId.name.slice(0, 2),
+        fromUserName: message?.fromUserId?.name?.slice(0, 2),
         time: "12:23",
       }));
       console.log(formattedMessages, "formatted ****");
       setMessages(formattedMessages);
-      // show skeleton for 1 sec
-      // setTimeout(() => {
-      //   setLoading(false);
-      // }, [1000]);
     }
   }, [messagesState]);
 
   useEffect(() => {
+    console.log(messagesState, "message state");
     const handleReceiveMessage = async (data) => {
       console.log(data, "from socket");
       // setMessages((prev) => [...prev, data]);
