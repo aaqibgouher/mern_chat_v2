@@ -264,11 +264,20 @@ const getGroupsForContacts = async (userId, filter = {}) => {
       },
     },
     {
-      $sort: { "latestMessage.createdAt": -1 },
+      $addFields: {
+        isGroup: true,
+      },
     },
     {
       $addFields: {
-        isGroup: true,
+        latestMessageDate: {
+          $ifNull: ["$latestMessage.createdAt", "$groupId.createdAt"],
+        },
+      },
+    },
+    {
+      $sort: {
+        latestMessageDate: -1,
       },
     },
     {
@@ -286,14 +295,111 @@ const getGroupsForContacts = async (userId, filter = {}) => {
         "groupId.profileURL": 1,
         "groupId.isGroup": 1,
         "groupId.description": 1,
+        "groupId.createdAt": 1,
         isGroup: 1,
         createdAt: 1,
         "latestMessage.message": 1,
         "latestMessage.type": 1,
         "latestMessage.createdAt": 1,
+        latestMessageDate: 1,
       },
     },
   ]);
+
+  // return await GroupMemberModel.aggregate([
+  //   {
+  //     $match: {
+  //       addedTo: Common.convertToMongoObjectId(userId),
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "addedBy",
+  //       foreignField: "_id",
+  //       as: "addedBy",
+  //     },
+  //   },
+  //   {
+  //     $unwind: "$addedBy",
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "addedTo",
+  //       foreignField: "_id",
+  //       as: "addedTo",
+  //     },
+  //   },
+  //   {
+  //     $unwind: "$addedTo",
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "groups",
+  //       localField: "groupId",
+  //       foreignField: "_id",
+  //       as: "groupId",
+  //     },
+  //   },
+  //   {
+  //     $unwind: "$groupId",
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "group_messages",
+  //       let: { groupId: "$groupId._id" },
+  //       pipeline: [
+  //         {
+  //           $match: {
+  //             $expr: {
+  //               $eq: ["$toGroupId", "$$groupId"],
+  //             },
+  //           },
+  //         },
+  //         { $sort: { createdAt: -1 } },
+  //         { $limit: 1 },
+  //       ],
+  //       as: "latestMessage",
+  //     },
+  //   },
+  //   {
+  //     $unwind: {
+  //       path: "$latestMessage",
+  //       preserveNullAndEmptyArrays: true,
+  //     },
+  //   },
+  //   {
+  //     $sort: { "latestMessage.createdAt": -1 },
+  //   },
+  //   {
+  //     $addFields: {
+  //       isGroup: true,
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       "addedBy._id": 1,
+  //       "addedBy.name": 1,
+  //       "addedBy.profile": 1,
+  //       "addedBy.about": 1,
+  //       "addedTo._id": 1,
+  //       "addedTo.name": 1,
+  //       "addedTo.profile": 1,
+  //       "addedTo.about": 1,
+  //       "groupId._id": 1,
+  //       "groupId.name": 1,
+  //       "groupId.profileURL": 1,
+  //       "groupId.isGroup": 1,
+  //       "groupId.description": 1,
+  //       isGroup: 1,
+  //       createdAt: 1,
+  //       "latestMessage.message": 1,
+  //       "latestMessage.type": 1,
+  //       "latestMessage.createdAt": 1,
+  //     },
+  //   },
+  // ]);
 };
 
 const getConnectedUsers = async ({ type, search, userId }) => {
@@ -628,13 +734,13 @@ const sendMessage = async (params) => {
   try {
     switch (type) {
       case "text":
-        const insertedMessage = await insertMessage(
+        const insertedMessage = await insertMessage({
           isGroup,
           message,
           type,
           fromUserId,
-          toContactId
-        );
+          toContactId,
+        });
         return insertedMessage;
       default:
         throw Constants.TYPE_SHOULD_BE_IN_THIS;
@@ -644,14 +750,10 @@ const sendMessage = async (params) => {
   }
 };
 
-const insertMessage = async (
-  isGroup,
-  message,
-  type,
-  fromUserId,
-  toContactId
-) => {
+const insertMessage = async (payload) => {
   try {
+    const { isGroup, message, type, fromUserId, toContactId } = payload;
+
     if (!isGroup) {
       const soloMessage = new MessageModel({
         fromUserId,
@@ -674,11 +776,18 @@ const insertMessage = async (
         toGroupId: toContactId,
         message,
         type,
-        seen: {},
+        seen: [],
         isDeleted: "NOT_DELETED",
       });
       const savedGroupMessage = await groupMessage.save();
-      return savedGroupMessage;
+      const populatedMessage = await GroupMessageModel.findById(
+        savedGroupMessage._id
+      )
+        .populate("fromUserId", "-password")
+        .populate("toGroupId")
+        .exec();
+
+      return populatedMessage;
     }
   } catch (error) {
     console.error("Error inserting message:", error);
