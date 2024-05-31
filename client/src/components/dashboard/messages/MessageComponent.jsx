@@ -63,7 +63,7 @@ const MessageComponent = () => {
             : message?.toUserId._id,
         message: message?.message,
         fromUserName: message?.fromUserId?.name?.slice(0, 2),
-        time: "12:23",
+        createdAt: message.createdAt,
       }));
       console.log(formattedMessages, "formatted ****");
       setMessages(formattedMessages);
