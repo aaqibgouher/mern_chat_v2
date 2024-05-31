@@ -55,13 +55,13 @@ const MessageComponent = () => {
     // setLoading(true);
     if (messagesState && messagesState.length) {
       const formattedMessages = messagesState.map((message) => ({
-        id: message._id,
+        id: message?._id,
         fromUserId: message?.fromUserId?._id,
         toUserId:
           "group" in selectedContactDetailState
-            ? message.toGroupId
-            : message.toUserId._id,
-        message: message.message,
+            ? message?.toGroupId
+            : message?.toUserId._id,
+        message: message?.message,
         fromUserName: message?.fromUserId?.name?.slice(0, 2),
         time: "12:23",
       }));
