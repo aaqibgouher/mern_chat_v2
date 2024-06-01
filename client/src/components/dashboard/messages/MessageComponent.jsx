@@ -43,7 +43,12 @@ const MessageComponent = () => {
         type,
         isGroup: selectedChatState.isGroup || false,
       };
+
+      // send message event emitting
       socketState.emit("send_message", payload);
+
+      // update chats event emitting to update my contacts
+      socketState.emit("update_chats", { name: "Alan", data: [] });
     } catch (error) {
       console.log(error, "from send message component");
     }

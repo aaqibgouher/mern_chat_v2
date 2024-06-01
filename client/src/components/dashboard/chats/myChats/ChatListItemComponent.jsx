@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
@@ -11,6 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChatAction } from "../../../../actions/userActions";
 import { useTheme } from "@mui/material/styles";
 import { formatRelativeTime } from "../../../../utils/common";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import ImageIcon from "@mui/icons-material/Image";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 const ChatListItemComponent = ({ chat, loading }) => {
   const dispatch = useDispatch();
@@ -53,6 +58,41 @@ const ChatListItemComponent = ({ chat, loading }) => {
     );
   };
 
+  const renderSecondaryText = (chat) => {
+    if (!chat?.isGroup) {
+      const latestMessage = chat?.latestMessage;
+      if (latestMessage) {
+        switch (latestMessage.type) {
+          case "text":
+            return (
+              <>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <DoneAllIcon fontSize="small" sx={{ marginRight: "5px" }} />
+                  <span>{latestMessage.message}</span>
+                </Box>
+              </>
+            );
+          case "video":
+            return (
+              <span>
+                <VideoLibraryIcon fontSize="small" /> Video
+              </span>
+            );
+          case "image":
+            return (
+              <span>
+                <ImageIcon fontSize="small" /> Image
+              </span>
+            );
+          default:
+            return latestMessage.message;
+        }
+      }
+    } else {
+      return chat?.groupId?.description;
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -87,24 +127,8 @@ const ChatListItemComponent = ({ chat, loading }) => {
           </ListItemAvatar>
           <ListItemText
             primary={renderPrimaryText(chat)}
-            secondary={
-              chat && "isGroup" in chat && !chat?.isGroup
-                ? chat?.toUserId?.about
-                : chat?.groupId?.description
-            }
+            secondary={renderSecondaryText(chat)}
           />
-          {/* <ListItemText
-            primary={
-              chat && "isGroup" in chat && !chat?.isGroup
-                ? chat?.toUserId?.name
-                : chat?.groupId?.name
-            }
-            secondary={
-              chat && "isGroup" in chat && !chat?.isGroup
-                ? chat?.toUserId?.about
-                : chat?.groupId?.description
-            }
-          /> */}
         </ListItemButton>
       )}
     </>

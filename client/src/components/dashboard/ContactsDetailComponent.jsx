@@ -28,6 +28,7 @@ const ContactsDetailComponent = () => {
   const contactsState = useSelector((state) => state.userReducers.contacts);
   const [contacts, setContacts] = useState([]);
   const theme = useTheme();
+  const tabState = useSelector((state) => state.helperReducers.activeTab);
 
   const getContacts = async () => {
     console.log("calling contacts");
@@ -38,7 +39,7 @@ const ContactsDetailComponent = () => {
   const addContact = async (toContactId) => {
     try {
       const res = await dispatch(
-        addUserInContactAction({ to_user_id: toContactId })
+        addUserInContactAction({ toUserId: toContactId })
       );
 
       if (res.status !== 200)
@@ -48,7 +49,7 @@ const ContactsDetailComponent = () => {
       await getContacts();
 
       // refresh chats list
-      await dispatch(fetchChatsAction());
+      await dispatch(fetchChatsAction({ type: tabState, search: "" }));
     } catch (error) {
       console.log(error, "from add contact");
     }
