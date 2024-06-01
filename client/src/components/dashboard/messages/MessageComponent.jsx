@@ -63,7 +63,7 @@ const MessageComponent = () => {
         id: message?._id,
         fromUserId: message?.fromUserId?._id,
         toUserId:
-          "group" in selectedContactDetailState
+          selectedContactDetailState && "group" in selectedContactDetailState
             ? message?.toGroupId
             : message?.toUserId._id,
         message: message?.message,

@@ -7,7 +7,7 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChatAction } from "../../../../actions/userActions";
 import { useTheme } from "@mui/material/styles";
@@ -36,8 +36,6 @@ const ChatListItemComponent = ({ chat, loading }) => {
       );
   };
 
-  console.log(chat, "chat *****");
-
   const renderPrimaryText = (chat) => {
     const name =
       chat && "isGroup" in chat && !chat?.isGroup
@@ -49,12 +47,18 @@ const ChatListItemComponent = ({ chat, loading }) => {
       : "";
 
     return (
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>{name}</span>
-        <Typography variant="caption" color="textSecondary">
-          {date}
-        </Typography>
-      </div>
+      <>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box>
+            <span>{name}</span>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              {date}
+            </Typography>
+          </Box>
+        </Box>
+      </>
     );
   };
 
@@ -65,12 +69,10 @@ const ChatListItemComponent = ({ chat, loading }) => {
         switch (latestMessage.type) {
           case "text":
             return (
-              <>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <DoneAllIcon fontSize="small" sx={{ marginRight: "5px" }} />
-                  <span>{latestMessage.message}</span>
-                </Box>
-              </>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <DoneAllIcon fontSize="small" sx={{ marginRight: "5px" }} />
+                <span>{latestMessage.message}</span>
+              </Box>
             );
           case "video":
             return (
