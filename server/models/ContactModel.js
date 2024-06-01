@@ -1,5 +1,25 @@
 const mongoose = require("mongoose");
 
+// latest message schema
+const latestMessageSchema = new mongoose.Schema(
+  {
+    message: {
+      type: String,
+      default: "",
+    },
+    type: {
+      type: String,
+      enum: ["text", "image", "video", "audio", "doc"],
+      default: "text",
+    },
+    seen: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
+
 // contact token schema
 const contactSchema = new mongoose.Schema(
   {
@@ -16,6 +36,10 @@ const contactSchema = new mongoose.Schema(
     isGroup: {
       type: Boolean,
       default: false,
+    },
+    latestMessage: {
+      type: latestMessageSchema,
+      default: null,
     },
   },
   { timestamps: true }

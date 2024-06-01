@@ -47,36 +47,83 @@ const addUser = async (params) => {
 };
 
 const getUsers = async (filter = {}) => {
-  const defaultFilter = { isEmailVerified: true };
+  const { userId } = filter;
 
-  const finalFilter = { ...defaultFilter, ...filter };
+  // creating query
+  const query = {};
+  if (userId) {
+    query._id = { $ne: userId };
+  }
 
-  return await UserModel.find(finalFilter).select("-password");
+  return await UserModel.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "contacts",
+        let: { userId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        $eq: ["$fromUserId", userId],
+                      },
+                      {
+                        $eq: ["$toUserId", "$$userId"],
+                      },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        $eq: ["$toUserId", userId],
+                      },
+                      {
+                        $eq: ["$fromUserId", "$$userId"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: "contact",
+      },
+    },
+    {
+      $addFields: {
+        isConnected: {
+          $gt: [{ $size: "$contact" }, 0],
+        },
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        phone: 1,
+        email: 1,
+        userName: 1,
+        profile: 1,
+        about: 1,
+        isConnected: 1,
+      },
+    },
+    {
+      $sort: {
+        name: 1,
+      },
+    },
+  ]);
 };
 
 const getSearchUsers = async (userId) => {
-  console.log(userId, "userId");
-  // get all users
-  let users = await getUsers();
-
-  // filter current users
-  users = users.filter((user) => !user._id.equals(userId));
-
-  // create a new array with modified users
-  const newUsers = await Promise.all(
-    users.map(async (user) => {
-      console.log(user._id);
-      const userContact = await getContactByFromAndTo(userId, user._id);
-
-      // create a new object with isConnected property
-      return {
-        ...user.toObject(), // convert Mongoose document to a plain object
-        isConnected: !!userContact,
-      };
-    })
-  );
-
-  return newUsers;
+  return await getUsers({ userId });
 };
 
 const getContacts = async (userId, filter = {}) => {
@@ -121,44 +168,6 @@ const getContacts = async (userId, filter = {}) => {
     },
     {
       $unwind: "$toUserId",
-    },
-
-    {
-      $lookup: {
-        from: "messages",
-        let: { fromUserId: "$fromUserId._id", toUserId: "$toUserId._id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $or: [
-                  {
-                    $and: [
-                      { $eq: ["$fromUserId", "$$fromUserId"] },
-                      { $eq: ["$toUserId", "$$toUserId"] },
-                    ],
-                  },
-                  {
-                    $and: [
-                      { $eq: ["$fromUserId", "$$toUserId"] },
-                      { $eq: ["$toUserId", "$$fromUserId"] },
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          { $sort: { createdAt: -1 } },
-          { $limit: 1 },
-        ],
-        as: "latestMessage",
-      },
-    },
-    {
-      $unwind: {
-        path: "$latestMessage",
-        preserveNullAndEmptyArrays: true,
-      },
     },
     {
       $sort: { "latestMessage.createdAt": -1 },
@@ -517,40 +526,55 @@ const getGroupMembers = async (column = "_id", value = "") => {
 };
 
 const addUserInContact = async (params = {}) => {
-  console.log(params);
+  if (!params || !params.fromUserId) throw Constants.FROM_ID_IS_REQUIRED;
   if (!params || !params.toUserId || typeof params.toUserId !== "string")
-    throw Constants.USER_ID_IS_REQUIRED;
+    throw Constants.TO_ID_IS_REQUIRED;
 
-  if (!Common.isObjectIdValid(params.toUserId))
+  const { fromUserId, toUserId } = params;
+
+  if (!Common.isObjectIdValid(fromUserId) || !Common.isObjectIdValid(toUserId))
     throw Constants.ID_SHOULD_BE_CORRECT_MONGO_OBJECT_ID;
 
-  const user = await getUser("_id", params.toUserId);
+  const user = await getUser("_id", toUserId);
 
   if (!user) throw Constants.USER_NOT_FOUND;
   if (!user.isEmailVerified) throw Constants.USER_NOT_VERIFIED;
 
-  const { fromUserId, toUserId } = params;
+  const contacts = await getContact(fromUserId, toUserId);
+
   // Check if there are already exist in contacts for the same incoming toUserId.
-  const contacts = await getConatct(fromUserId, toUserId);
   if (contacts) throw Constants.USER_ALREADY_EXISTS_IN_CONTACTS;
 
-  const savedConatctFromUser = await addToConatct(fromUserId, toUserId);
-  const savedConatctToUser = await addToConatct(toUserId, fromUserId);
+  // setting default latest message from Chatiaoo
+  const latestMesssagePayload = {
+    message: "Welcome to Chatiyaoo ...",
+  };
 
-  return { savedConatctFromUser, savedConatctToUser };
+  const savedContactFromUser = await addToContact(fromUserId, toUserId, {
+    latestMessage: latestMesssagePayload,
+  });
+  const savedContactToUser = await addToContact(toUserId, fromUserId, {
+    latestMessage: latestMesssagePayload,
+  });
+
+  return { savedContactFromUser, savedContactToUser };
 };
 
-const addToConatct = async (fromUserId, toUserId) => {
+const addToContact = async (fromUserId, toUserId, payload) => {
+  const { latestMessage } = payload;
+
   const contactData = new ContactModel({
     fromUserId,
     toUserId,
+    latestMessage,
   });
 
   const savedConatct = await contactData.save();
 
   return savedConatct._id;
 };
-const getConatct = async (fromUserId, toUserId) => {
+
+const getContact = async (fromUserId, toUserId) => {
   const contacts = await ContactModel.findOne({
     fromUserId,
     toUserId,
@@ -763,11 +787,24 @@ const insertMessage = async (payload) => {
         seen: false,
       });
 
+      // save message to messages
       const savedSoloMessage = await soloMessage.save();
       const populatedMessage = await MessageModel.findById(savedSoloMessage._id)
         .populate("fromUserId", "-password")
         .populate("toUserId", "-password")
         .exec();
+
+      // save latest message to contacts
+      await Promise.all([
+        updateContact(
+          { fromUserId, toUserId: toContactId },
+          { latestMessage: { message, type } }
+        ),
+        updateContact(
+          { fromUserId: toContactId, toUserId: fromUserId },
+          { latestMessage: { message, type } }
+        ),
+      ]);
 
       return populatedMessage;
     } else {
@@ -886,11 +923,20 @@ const toggleAdminStatus = async (params = {}) => {
   return savedMember;
 };
 
+const updateContact = async (condition, dataToUpdate) => {
+  return await ContactModel.findOneAndUpdate(
+    condition,
+    {
+      $set: dataToUpdate,
+    },
+    { new: true, upsert: true }
+  );
+};
+
 // export
 module.exports = {
   getUser,
   addUser,
-  getUsers,
   getUsers,
   getConnectedUsers,
   getContacts,

@@ -46,6 +46,11 @@ io.on("connection", (socket) => {
     io.emit("receive_message", res);
   });
 
+  // update chats if message sent/add user to contact
+  socket.on("update_chats", async (payload) => {
+    console.log("called updated", payload);
+  });
+
   //   disconnect
   socket.on("disconnect", () => {
     console.log("Socket disconnected");

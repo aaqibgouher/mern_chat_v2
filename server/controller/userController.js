@@ -95,9 +95,14 @@ const exitGroup = async (req, res) => {
 
 const addUserInContact = async (req, res) => {
   try {
-    const fromUserId = req.user._id;
-    const toUserId = req.body.to_user_id;
-    let data = await userService.addUserInContact({ fromUserId, toUserId });
+    const { _id } = req.user;
+    const { toUserId } = req.body;
+
+    let data = await userService.addUserInContact({
+      fromUserId: _id,
+      toUserId,
+    });
+
     // returing success output, message, data
     return await Output.success(
       res,
