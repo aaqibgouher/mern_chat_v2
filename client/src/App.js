@@ -16,6 +16,7 @@ import LoginComponent from "./components/auth/LoginComponent";
 import RegisterComponent from "./components/auth/RegisterComponent";
 import VerifyEmailComponent from "./components/auth/VerifyEmailComponent";
 import PublicRoute from "./middlewares/PublicRoute";
+import { getToken } from "./utils/common";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -33,7 +34,14 @@ const theme = createTheme({
 });
 
 function App() {
-  const [socket, setSocket] = useState(io(BASE_URL));
+  const token = getToken();
+  const [socket, setSocket] = useState(
+    io(BASE_URL, {
+      auth: {
+        token: token,
+      },
+    })
+  );
   const dispatch = useDispatch();
 
   console.log(socket, "socket");

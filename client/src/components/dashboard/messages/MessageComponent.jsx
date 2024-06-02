@@ -14,7 +14,10 @@ import SendIcon from "@mui/icons-material/Send";
 import LottieNoMessageAnimationComponent from "../../helper/LottieNoMessageAnimationComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { sendMessageAction } from "../../../actions/chatActions";
-import { FETCH_MESSAGES } from "../../../actionTypes/chatActionTypes";
+import {
+  FETCH_CHATS,
+  FETCH_MESSAGES,
+} from "../../../actionTypes/chatActionTypes";
 import MessageListComponent from "./MessageListComponent";
 
 const MessageComponent = () => {
@@ -33,6 +36,7 @@ const MessageComponent = () => {
   const [message, setMessage] = useState("");
   const [type, setType] = useState("text");
   const [loading, setLoading] = useState(false);
+  const tabState = useSelector((state) => state.helperReducers.activeTab);
 
   const sendMessage = async () => {
     try {
@@ -49,13 +53,26 @@ const MessageComponent = () => {
 
       // update chats event emitting to update my contacts
       socketState.emit("update_chats", { name: "Alan", data: [] });
+      // const acknowledgment = await new Promise((resolve, reject) => {
+      //   socketState.emit("send_message", payload, (ack) => {
+      //     if (ack.error) {
+      //       console.error("Error acknowledgment from server:", ack.error);
+      //       reject(ack.error);
+      //     } else {
+      //       resolve(ack);
+      //     }
+      //   });
+      // });
+
+      // console.log("Server acknowledgment:", acknowledgment);
+
+      // socketState.emit("update_chats", { type: tabState, search: "" });
     } catch (error) {
       console.log(error, "from send message component");
     }
   };
 
   useEffect(() => {
-    console.log("use called", messagesState);
     setMessages([]);
     // setLoading(true);
     if (messagesState && messagesState.length) {
@@ -70,17 +87,13 @@ const MessageComponent = () => {
         fromUserName: message?.fromUserId?.name?.slice(0, 2),
         createdAt: message.createdAt,
       }));
-      console.log(formattedMessages, "formatted ****");
       setMessages(formattedMessages);
     }
   }, [messagesState]);
 
   useEffect(() => {
-    console.log(messagesState, "message state");
     const handleReceiveMessage = async (data) => {
-      console.log(data, "from socket");
       // setMessages((prev) => [...prev, data]);
-      console.log(messagesState, "from state xxxx");
       dispatch({ type: FETCH_MESSAGES, payload: [...messagesState, data] });
       setMessage("");
       // await dispatch({
@@ -103,7 +116,7 @@ const MessageComponent = () => {
       // show skeleton for 1 sec
       setTimeout(() => {
         setLoading(false);
-      }, [1000]);
+      }, 1000);
     }
   }, [selectedChatState]);
 
