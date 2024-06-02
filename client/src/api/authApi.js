@@ -10,7 +10,6 @@ const token = getToken();
 export const registerApi = async (payload) => {
   try {
     const res = await apiService.post("/api/auth/register", payload);
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -29,7 +28,6 @@ export const verifyEmailApi = async (payload) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -44,7 +42,6 @@ export const verifyEmailApi = async (payload) => {
 export const loginApi = async (payload) => {
   try {
     const res = await apiService.post("/api/auth/login", payload);
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -63,7 +60,6 @@ export const logoutApi = async () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";

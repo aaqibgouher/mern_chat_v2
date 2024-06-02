@@ -42,7 +42,6 @@ const VerifyEmailComponent = () => {
       await dispatch(verifyEmailAction({ code }));
 
       setErrors({});
-      console.log("verified");
     } catch (error) {
       console.log(error, "from verify email component");
     }

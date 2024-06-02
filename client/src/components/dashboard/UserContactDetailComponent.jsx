@@ -57,7 +57,6 @@ const UserContactDetailComponent = () => {
   const classes = useStyles();
 
   const handleAddParticipant = (type) => {
-    console.log("type", type);
     dispatch(showDialog(type));
   };
 

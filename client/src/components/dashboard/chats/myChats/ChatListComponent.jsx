@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 
 const ChatListComponent = ({ chats, loading }) => {
   const tabState = useSelector((state) => state.helperReducers.activeTab);
-  console.log(tabState, "tab state");
 
   return (
     <>

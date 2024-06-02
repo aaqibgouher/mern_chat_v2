@@ -48,10 +48,7 @@ const DashboardLayout = () => {
 
   const fetchMessages = async () => {
     try {
-      console.log("called fetch msg", selectedChat);
-
       if (selectedChat.isGroup) {
-        console.log("group called");
         await dispatch(fetchGroupMessagesAction(selectedChat.profileId));
       } else {
         await dispatch(
@@ -67,7 +64,6 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (selectedChat) {
-      console.log(selectedChat, "called selected");
       fetchContactDetail();
       fetchMessages();
     }

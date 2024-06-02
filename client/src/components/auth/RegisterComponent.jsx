@@ -61,7 +61,6 @@ const RegisterComponent = () => {
       navigate("/verify-email");
 
       setErrors({});
-      console.log("Register");
     } catch (error) {
       console.log(error, "from handle register");
     }

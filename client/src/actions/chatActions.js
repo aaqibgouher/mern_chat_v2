@@ -17,7 +17,6 @@ import {
 export const fetchChatsAction = (payload) => async (dispatch) => {
   try {
     const res = await fetchChatsApi(payload);
-    console.log("from actoins");
 
     dispatch({ type: FETCH_CHATS, payload: res.data });
   } catch (error) {
@@ -33,7 +32,6 @@ export const fetchChatsAction = (payload) => async (dispatch) => {
 export const fetchMessagesAction = (payload) => async (dispatch) => {
   try {
     const res = await fetchMessagesApi(payload);
-    console.log("from actions");
 
     dispatch({ type: FETCH_MESSAGES, payload: res.data });
   } catch (error) {
@@ -48,9 +46,7 @@ export const fetchMessagesAction = (payload) => async (dispatch) => {
 // group message
 export const fetchGroupMessagesAction = (payload) => async (dispatch) => {
   try {
-    console.log("group action");
     const res = await fetchGroupMessagesApi(payload);
-    console.log("from actions");
 
     dispatch({ type: FETCH_MESSAGES, payload: res.data });
   } catch (error) {

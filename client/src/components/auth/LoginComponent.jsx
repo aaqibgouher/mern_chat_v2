@@ -58,7 +58,6 @@ const LoginComponent = () => {
 
       // set error to blank
       setErrors({});
-      console.log("login");
     } catch (error) {
       console.log(error, "from handle login");
     }

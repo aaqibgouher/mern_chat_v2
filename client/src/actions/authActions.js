@@ -41,7 +41,6 @@ export const registerAction = (payload) => async (dispatch) => {
 export const verifyEmailAction = (payload) => async (dispatch) => {
   try {
     const res = await verifyEmailApi(payload);
-    console.log("from actions res", res);
   } catch (error) {
     console.log(error, "from auth actions -> verify email action");
   }

@@ -14,8 +14,6 @@ const DashboardPage = ({ children }) => {
   const fetchMe = async () => {
     try {
       const res = await dispatch(fetchMeAction());
-
-      console.log(res, "from res fetch me");
     } catch (error) {
       console.log(error, "from fetch me dashboard page ");
     }

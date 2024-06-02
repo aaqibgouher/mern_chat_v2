@@ -53,17 +53,13 @@ const AddParticipantListComponent = () => {
 
       // participant added, refresh the contact detail lists to show added participant
       await dispatch(fetchContactDetailAction(selectedChatState));
-
-      console.log(res, "from res");
     } catch (error) {
       console.log(error, "from add member to group");
     }
   };
 
   const getContacts = async () => {
-    console.log("calling contacts");
     await dispatch(fetchContactsAction());
-    console.log(contactsState, "chats from state");
   };
 
   useEffect(() => {

@@ -11,7 +11,6 @@ export const fetchMeApi = async () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -30,7 +29,6 @@ export const fetchContactsApi = async () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -49,7 +47,6 @@ export const fetchContactDetailApi = async (payload) => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";
@@ -72,7 +69,6 @@ export const addUserInContactApi = async (payload) => {
         },
       }
     );
-    console.log(res, "from res");
 
     if (res.hasOwnProperty("status") && res.status !== 200)
       throw "Error while calling api";

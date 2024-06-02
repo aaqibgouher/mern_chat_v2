@@ -31,9 +31,7 @@ const ContactsDetailComponent = () => {
   const tabState = useSelector((state) => state.helperReducers.activeTab);
 
   const getContacts = async () => {
-    console.log("calling contacts");
     await dispatch(fetchContactsAction());
-    console.log(contactsState, "chats from state");
   };
 
   const addContact = async (toContactId) => {

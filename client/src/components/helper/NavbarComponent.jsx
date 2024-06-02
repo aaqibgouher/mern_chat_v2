@@ -77,7 +77,6 @@ function NavbarComponent() {
   };
 
   const handleUserDetailDrawer = (type) => {
-    console.log("type", type);
     dispatch(showDrawer(type));
   };
 

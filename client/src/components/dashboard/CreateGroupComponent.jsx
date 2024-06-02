@@ -68,8 +68,6 @@ const CreateGroupComponent = () => {
 
       setErrors(errors);
 
-      console.log(errors, "errors");
-
       // If there are errors, update the state and prevent form submission
       if (Object.keys(errors).length > 0) {
         return;
@@ -109,8 +107,6 @@ const CreateGroupComponent = () => {
       await dispatch(
         setSelectedChatAction({ profileId: res.data[0].groupId, isGroup: true })
       );
-
-      console.log("create group", res);
     } catch (error) {
       console.log(error, "from handle creat group");
     }

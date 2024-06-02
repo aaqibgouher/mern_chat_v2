@@ -40,7 +40,6 @@ export const fetchMeAction = () => async (dispatch) => {
 export const fetchContactsAction = () => async (dispatch) => {
   try {
     const res = await fetchContactsApi();
-    console.log("from actions");
 
     dispatch({ type: FETCH_CONTACTS, payload: res.data });
   } catch (error) {
@@ -84,8 +83,6 @@ export const fetchContactDetailAction = (payload) => async (dispatch) => {
 export const addUserInContactAction = (payload) => async (dispatch) => {
   try {
     const res = await addUserInContactApi(payload);
-
-    console.log(res, "from res");
 
     return res;
   } catch (error) {

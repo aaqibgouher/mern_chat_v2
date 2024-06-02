@@ -44,7 +44,6 @@ function NavbarComponent() {
     else if (action === "handleSettings")
       console.log("need to implement"); // await handleSettings();
     else if (action === "handleLogout") console.log("need to implement"); // await handleLogout();
-    console.log(action, "called");
   };
 
   const handleDetailOpen = (type) => {
