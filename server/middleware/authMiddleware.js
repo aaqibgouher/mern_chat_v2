@@ -47,7 +47,6 @@ const isAuthenticate = async (req, res, next) => {
 const isAuthenticateSocket = async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
-    console.log(token, "token **********");
 
     if (!token) throw "Please login to continue";
 

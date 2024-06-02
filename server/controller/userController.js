@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 
 const getUser = async (req, res) => {
   try {
-    console.log(req.user, "user");
     // calling service file to get users
     let data = await userService.getUser("_id", req.user._id);
 
