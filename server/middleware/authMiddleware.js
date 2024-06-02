@@ -43,6 +43,40 @@ const isAuthenticate = async (req, res, next) => {
   }
 };
 
+// Socket Authenticate Middleware
+const isAuthenticateSocket = async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    console.log(token, "token **********");
+
+    if (!token) throw "Please login to continue";
+
+    const decoded = await JWTLibrary.decodeToken(token);
+
+    if (!decoded) throw "Invalid token";
+
+    const user = await userService.getUser("_id", decoded.userId);
+
+    if (!user) throw "User does not exist, please login again";
+
+    const userToken = await authService.getUserTokenByIdAndToken(
+      user._id,
+      token
+    );
+
+    if (!userToken) throw "Invalid token";
+
+    socket.user = user;
+    socket.user.token = token;
+
+    next();
+  } catch (e) {
+    console.log(e, "from auth middleware");
+    return next(new Error(e));
+  }
+};
+
 module.exports = {
   isAuthenticate,
+  isAuthenticateSocket,
 };

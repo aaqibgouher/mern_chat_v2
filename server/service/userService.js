@@ -806,6 +806,7 @@ const insertMessage = async (payload) => {
         ),
       ]);
 
+      console.log(3, "insert done *********");
       return populatedMessage;
     } else {
       const groupMessage = new GroupMessageModel({
